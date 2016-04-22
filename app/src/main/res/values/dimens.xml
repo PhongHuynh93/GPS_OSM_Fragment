@@ -8,4 +8,7 @@
     <!--navigation drawer-->
     <dimen name="nav_header_height">160dp</dimen>
 
+    <!--search-->
+    <dimen name="searchbar_margintop">31dp</dimen>
+    <dimen name="searchbar_marginleft">10dp</dimen>
 </resources>
