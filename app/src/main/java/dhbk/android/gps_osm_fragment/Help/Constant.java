@@ -1,4 +1,4 @@
-package dhbk.android.gps_osm_fragment;
+package dhbk.android.gps_osm_fragment.Help;
 
 /**
  * Created by huynhducthanhphong on 4/22/16.

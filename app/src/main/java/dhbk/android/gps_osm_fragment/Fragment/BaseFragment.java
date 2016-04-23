@@ -1,4 +1,4 @@
-package dhbk.android.gps_osm_fragment;
+package dhbk.android.gps_osm_fragment.Fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+
+import dhbk.android.gps_osm_fragment.Help.Constant;
+import dhbk.android.gps_osm_fragment.R;
 
 /**
  * Created by huynhducthanhphong on 4/22/16.

@@ -1,6 +1,8 @@
-package dhbk.android.gps_osm_fragment;
+package dhbk.android.gps_osm_fragment.Fragment;
 
 import android.content.Context;
+
+import dhbk.android.gps_osm_fragment.R;
 
 /**
  * A placeholder fragment containing a simple view.
