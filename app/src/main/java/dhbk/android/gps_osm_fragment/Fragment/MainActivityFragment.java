@@ -98,4 +98,8 @@ public class MainActivityFragment extends BaseFragment {
         return rootView;
     }
 
+    public interface MainActivityFragmentInterface {
+        void onClickDirection();
+    }
+
 }

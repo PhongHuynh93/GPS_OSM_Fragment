@@ -19,7 +19,7 @@ import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, MainActivityFragment.MainActivityFragmentInterface {
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -91,5 +91,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
+    }
+
+    // go to direction Fragment
+    @Override
+    public void onClickDirection() {
+
     }
 }
