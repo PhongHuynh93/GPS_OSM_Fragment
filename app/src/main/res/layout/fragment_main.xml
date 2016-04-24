@@ -16,7 +16,7 @@
 
         <fragment
             android:id="@+id/autocomplete_fragment"
-            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+            android:name="com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </android.support.v7.widget.CardView>
@@ -27,4 +27,39 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <!--bottom sheets:  -->
+    <fragment
+        android:id="@+id/map_bottom_sheets"
+        android:name="dhbk.android.gps_osm_fragment.Fragment.BottomSheetFragment"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        android:layout_width="match_parent"
+        android:layout_height="500dp" />
+
+
+    <!--fab nằm ở cuối layout + neo tại top|right của bottom sheet-->
+    <!--direction fab-->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_menu_directions"
+        android:tint="@color/colorWhite"
+        app:backgroundTint="@color/colorBlue"
+        app:layout_anchor="@id/map_bottom_sheets"
+        app:layout_anchorGravity="top|start" />
+    <!--here location fab-->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_my_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_menu_mylocation"
+        android:tint="@color/colorPrimaryDark"
+        app:backgroundTint="@color/colorWhite"
+        app:layout_anchor="@id/map_bottom_sheets"
+        app:layout_anchorGravity="top|end" />
 </android.support.design.widget.CoordinatorLayout>
