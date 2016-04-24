@@ -1,10 +1,11 @@
 package dhbk.android.gps_osm_fragment.Fragment;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,11 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 
+import java.util.ArrayList;
+
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
+import dhbk.android.gps_osm_fragment.Help.ImagePagerAdapter;
+import dhbk.android.gps_osm_fragment.Help.PhotoTask;
 import dhbk.android.gps_osm_fragment.R;
 
 public class BottomSheetFragment extends Fragment {
@@ -21,6 +26,7 @@ public class BottomSheetFragment extends Fragment {
     public static final String LIFE = "Vòng đời Fragment";
     private View mRootView;
     private BottomSheetBehavior<View> mBottomSheetBehavior;
+    public static ArrayList<PhotoTask.AttributedPhoto> mArrayListAttributedPhoto;
 
     public BottomSheetFragment() {
         // Required empty public constructor
@@ -101,7 +107,26 @@ public class BottomSheetFragment extends Fragment {
     }
 
     private void addPhotoToBottomSheet(String id, GoogleApiClient googleApiClient) {
+        final ViewPager viewPager = (ViewPager) mRootView.findViewById(R.id.imageSlider);
 
+        new PhotoTask(viewPager.getWidth(), viewPager.getHeight()) {
+            @Override
+            protected void onPreExecute() {
+                // Display a temporary image to show while bitmap is loading.
+            }
+
+            @Override
+            protected void onPostExecute(ArrayList<AttributedPhoto> attributedPhotos) {
+                // TODO: 4/24/16 remove progress dialog
+                // load image on viewpager, remove old images and add new ones.
+                if (attributedPhotos.size() > 0) {
+                    mArrayListAttributedPhoto = attributedPhotos;
+                    ImagePagerAdapter imagePagerAdapter = new ImagePagerAdapter(getChildFragmentManager(), attributedPhotos.size());
+                    viewPager.setAdapter(imagePagerAdapter);
+                }
+            }
+        }.execute(new PhotoTask.MyTaskParams(id, ((MainActivity)getActivity()).getGoogleApiClient()));
     }
+
 
 }

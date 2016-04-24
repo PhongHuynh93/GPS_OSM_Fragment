@@ -19,9 +19,9 @@ import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, MainActivityFragment.MainActivityFragmentInterface {
 
-    public GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // load fragment main
         if (savedInstanceState == null) {
             // FragmentManager to add/remove fragment
-            getFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.root_layout, MainActivityFragment.newInstance(), Constant.FRAGMENT_MAIN)
                     .commit();
@@ -91,5 +91,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
+    }
+
+    // go to direction Fragment
+    @Override
+    public void onClickDirection() {
+
     }
 }
