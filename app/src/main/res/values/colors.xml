@@ -3,4 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!--nav bottom-->
+    <color name="bottom_navigation_bar">#000000</color>
+
+    <!--fab-->
+    <color name="colorBlue">#0288D1</color>
+    <color name="colorWhite">#FFFFFF</color>
 </resources>
