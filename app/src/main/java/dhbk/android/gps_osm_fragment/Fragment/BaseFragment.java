@@ -2,9 +2,7 @@ package dhbk.android.gps_osm_fragment.Fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -18,22 +16,13 @@ import dhbk.android.gps_osm_fragment.R;
  * Created by huynhducthanhphong on 4/22/16.
  */
 public abstract class BaseFragment extends Fragment {
-    private final int mLayout;
     private MapView mMapView;
     private View mRootView;
     private IMapController mIMapController;
 
-    public BaseFragment(int layout) {
-        this.mLayout = layout;
+    public BaseFragment() {
+        
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        mRootView = inflater.inflate(mLayout, container, false);
-        return mRootView;
-    }
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -49,5 +38,9 @@ public abstract class BaseFragment extends Fragment {
         mIMapController.setZoom(Constant.ZOOM);
         GeoPoint startPoint = new GeoPoint(10.772241, 106.657676);
         mIMapController.setCenter(startPoint);
+    }
+
+    public void setRootView(View rootView) {
+        this.mRootView = rootView;
     }
 }

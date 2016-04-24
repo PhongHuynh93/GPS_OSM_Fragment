@@ -30,10 +30,11 @@
 
     <!--bottom sheets:  -->
     <fragment
-        android:id="@+id/autocomplete_fragment"
-        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        android:id="@+id/map_bottom_sheets"
+        android:name="dhbk.android.gps_osm_fragment.Fragment.BottomSheetFragment"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="500dp" />
 
 
     <!--fab nằm ở cuối layout + neo tại top|right của bottom sheet-->
