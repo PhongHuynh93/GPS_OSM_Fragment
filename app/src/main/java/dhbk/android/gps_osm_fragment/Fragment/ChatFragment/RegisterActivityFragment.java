@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +12,15 @@ import android.widget.EditText;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
+import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.R;
 
 
-public class RegisterActivityFragment extends Fragment {
+public class RegisterActivityFragment extends BaseFragment {
     private static final String ARG_EMAIL = "param1";
     private static final String ARG_PASS = "param2";
     private static final String TAG = "RegisterFragment";
@@ -80,11 +81,23 @@ public class RegisterActivityFragment extends Fragment {
                 if (nickEdt.getText().toString().equals("")) {
                     Snackbar.make(getActivity().findViewById(R.id.register_coordinator), "Please enter nickname", Snackbar.LENGTH_LONG).show();
                 } else {
+
                     // dk voi email va pass
                     ((MainActivity) getActivity()).getFirebaseRefer().createUser(emailEdt.getText().toString(), passEdt.getText().toString(), new Firebase.ValueResultHandler<Map<String, Object>>() {
                         @Override
                         // dk thành công
                         public void onSuccess(Map<String, Object> result) {
+                            Map<String, Object> nickMap = new HashMap<>();
+                            // root/$email$/nick
+                            nickMap.put("nick", nickEdt.getText().toString());
+                            String childSubString = retrieveSubString(emailEdt.getText().toString());
+                            ((MainActivity)getActivity()).getFirebaseRefer().child(childSubString).updateChildren(nickMap);
+                            // root/nickList/@@@@/
+                            Map<String, String> nickList = new HashMap<>();
+                            nickList.put("nick", nickEdt.getText().toString());
+                            ((MainActivity)getActivity()).getFirebaseRefer().child("nickList").push().setValue(nickList);
+
+
                             getActivity().getSupportFragmentManager()
                                     .beginTransaction()
                                     .replace(R.id.root_layout, ChooseChatTypeFragment.newInstance(nickEdt.getText().toString()))

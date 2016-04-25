@@ -12,8 +12,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
@@ -85,7 +87,21 @@ public class ChatActivityFragment extends BaseFragment {
                 ((MainActivity)getActivity()).getFirebaseRefer().authWithPassword(emailEdt.getText().toString(), passEdt.getText().toString(), new Firebase.AuthResultHandler() {
                     @Override
                     public void onAuthenticated(AuthData authData) {
-                        // TODO: 4/25/16 retrieve nick from firebase and pass to type chat room.
+                        ((MainActivity) getActivity()).getFirebaseRefer().child(retrieveSubString(emailEdt.getText().toString())).child("nick").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                getActivity().getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.root_layout, ChooseChatTypeFragment.newInstance(dataSnapshot.getValue(String.class)))
+                                .addToBackStack(null)
+                                .commit();
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+
+                            }
+                        });
 //                        getActivity().getSupportFragmentManager()
 //                                .beginTransaction()
 //                                .replace(R.id.root_layout, ChooseChatTypeFragment.newInstance())
@@ -112,7 +128,6 @@ public class ChatActivityFragment extends BaseFragment {
     }
 
     public interface OnFragmentChatInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }
