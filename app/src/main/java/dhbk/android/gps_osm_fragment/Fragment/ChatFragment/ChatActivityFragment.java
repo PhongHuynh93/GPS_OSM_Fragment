@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,8 @@ import dhbk.android.gps_osm_fragment.R;
  * Use the {@link ChatActivityFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+
+// TODO: 4/25/16 make animation when transform from fragment to fragment
 public class ChatActivityFragment extends BaseFragment {
     public static final String TAG = "ChatActivityFragment";
 
@@ -75,7 +78,6 @@ public class ChatActivityFragment extends BaseFragment {
             }
         });
 
-        // TODO: 4/25/16 add login
         getActivity().findViewById(R.id.button_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,13 +85,19 @@ public class ChatActivityFragment extends BaseFragment {
                 ((MainActivity)getActivity()).getFirebaseRefer().authWithPassword(emailEdt.getText().toString(), passEdt.getText().toString(), new Firebase.AuthResultHandler() {
                     @Override
                     public void onAuthenticated(AuthData authData) {
-                        // TODO: 4/25/16 go to fragment private chat or public chat
-                        
+                        // TODO: 4/25/16 retrieve nick from firebase and pass to type chat room.
+//                        getActivity().getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.root_layout, ChooseChatTypeFragment.newInstance())
+//                                .addToBackStack(null)
+//                                .commit();
                     }
                     @Override
                     public void onAuthenticationError(FirebaseError firebaseError) {
                         // there was an error
-                        // TODO: 4/25/16 make snackbar
+                        Snackbar.make(getActivity().findViewById(R.id.login_coordinator), firebaseError.getMessage(), Snackbar.LENGTH_LONG).show();
+
+
                     }
                 });
 
