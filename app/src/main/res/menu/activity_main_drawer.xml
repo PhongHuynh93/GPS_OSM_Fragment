@@ -5,6 +5,9 @@
         <item
             android:id="@+id/direction"
             android:title="@string/direction"/>
+        <item
+            android:id="@+id/chat"
+            android:title="@string/chat"/>
     </group>
 
 

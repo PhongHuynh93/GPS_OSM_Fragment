@@ -1,5 +1,6 @@
 package dhbk.android.gps_osm_fragment.Activity;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -14,12 +15,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 
+import dhbk.android.gps_osm_fragment.Fragment.ChatActivityFragment;
 import dhbk.android.gps_osm_fragment.Fragment.MainActivityFragment;
-import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, MainActivityFragment.MainActivityFragmentInterface {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, MainActivityFragment.MainActivityFragmentInterface, ChatActivityFragment.OnFragmentChatInteractionListener {
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -39,6 +40,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 if (id == R.id.direction) {
 //                    Intent intent = new Intent(this, MainActivity.class);
 //                    startActivity(intent);
+                } else if (id == R.id.chat) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.root_layout, ChatActivityFragment.newInstance())
+                            .addToBackStack(null)
+                            .commit();
                 }
                 DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -51,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             // FragmentManager to add/remove fragment
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.root_layout, MainActivityFragment.newInstance(), Constant.FRAGMENT_MAIN)
+                    .add(R.id.root_layout, MainActivityFragment.newInstance())
                     .commit();
         }
 
@@ -93,9 +100,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return mGoogleApiClient;
     }
 
-    // go to direction Fragment
+    // TODO: 4/24/16  go to direction Fragment
     @Override
     public void onClickDirection() {
+
+    }
+
+    // TODO: 4/24/16 chat method
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
     }
 }

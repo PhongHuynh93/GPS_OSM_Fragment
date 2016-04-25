@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -26,7 +27,7 @@ import dhbk.android.gps_osm_fragment.R;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends BaseFragment {
-
+    public static final String TAG = "MainActivityFragment";
 
     public static MainActivityFragment newInstance() {
         MainActivityFragment mainActivityFragment = new MainActivityFragment();
@@ -50,7 +51,13 @@ public class MainActivityFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        super.setRootView(rootView); // set parent rootview
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
         super.makeMapDefaultSetting();
 
         final SupportPlaceAutocompleteFragment autocompleteFragment = (SupportPlaceAutocompleteFragment)
@@ -69,11 +76,11 @@ public class MainActivityFragment extends BaseFragment {
             }
         });
         // TODO: 4/24/16 listen floating button
-        final FloatingActionButton floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab_my_location);
+        final FloatingActionButton floatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab_my_location);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (((MainActivity)getActivity()).getGoogleApiClient().isConnected()) {
+                if (((MainActivity) getActivity()).getGoogleApiClient().isConnected()) {
                     if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         return;
                     }
@@ -87,7 +94,7 @@ public class MainActivityFragment extends BaseFragment {
         });
 
         // if click, go to another activity
-        final FloatingActionButton floatingActionButtonDirection = (FloatingActionButton) rootView.findViewById(R.id.fab_direction);
+        final FloatingActionButton floatingActionButtonDirection = (FloatingActionButton) getActivity().findViewById(R.id.fab_direction);
         floatingActionButtonDirection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,7 +102,16 @@ public class MainActivityFragment extends BaseFragment {
             }
         });
 
-        return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     public interface MainActivityFragmentInterface {

@@ -8,6 +8,8 @@ import dhbk.android.gps_osm_fragment.R;
 public class Constant {
     // fragment
     public static final String FRAGMENT_MAIN = "fragment_main";
+    public static final String FRAGMENT_CHAT = "fragmnet_chat";
+
 
     // url request for direction
     public static final String GOOGLE_SERVER_KEY = "AIzaSyAH9us0uue6rltRozrzN4Kf43nEL2oX5ds";

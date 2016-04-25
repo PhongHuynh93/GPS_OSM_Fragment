@@ -7,7 +7,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
@@ -31,20 +30,16 @@ import dhbk.android.gps_osm_fragment.Voice.VIetnameseSpeak;
  */
 public abstract class BaseFragment extends Fragment implements MapEventsReceiver {
     private MapView mMapView;
-    private View mRootView;
     private IMapController mIMapController;
 
     public BaseFragment() {
         
     }
 
-    public void setRootView(View rootView) {
-        this.mRootView = rootView;
-    }
 
 
     public void makeMapDefaultSetting() {
-        mMapView = (MapView) mRootView.findViewById(R.id.map); // map
+        mMapView = (MapView) getActivity().findViewById(R.id.map); // map
         mMapView.setTileSource(TileSourceFactory.MAPNIK);
         mMapView.setMultiTouchControls(true);
         mIMapController = mMapView.getController(); // map controller
