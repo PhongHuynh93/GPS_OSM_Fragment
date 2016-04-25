@@ -4,10 +4,41 @@
              android:layout_height="match_parent"
              tools:context="dhbk.android.gps_osm_fragment.Fragment.ChatFragment.PublicChatActivityFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="public chat"/>
+        android:scrollbars="vertical" />
 
+
+    <LinearLayout
+        android:id="@+id/chat_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="8dp"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <EditText
+            android:id="@+id/edit_txt_message"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_weight=".5"
+            android:background="@color/colorWhite"
+            android:gravity="center|left"
+            android:hint="Sent"
+            android:padding="4dp" />
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/button_sent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/ic_send"/>
+
+    </LinearLayout>
 </FrameLayout>
