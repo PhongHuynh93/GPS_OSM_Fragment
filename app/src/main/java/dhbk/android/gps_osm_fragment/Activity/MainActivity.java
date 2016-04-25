@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.root_layout, ChatActivityFragment.newInstance())
-                            .addToBackStack(null)
                             .commit();
                 }
                 DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
