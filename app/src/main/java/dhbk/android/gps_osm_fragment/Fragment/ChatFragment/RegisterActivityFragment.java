@@ -3,11 +3,20 @@ package dhbk.android.gps_osm_fragment.Fragment.ChatFragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+
+import java.util.Map;
+
+import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.R;
 
 /**
@@ -23,6 +32,7 @@ public class RegisterActivityFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "RegisterFragment";
 
     // TODO: Rename and change types of parameters
     private String mEmail;
@@ -68,12 +78,6 @@ public class RegisterActivityFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_register_activity, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -90,6 +94,36 @@ public class RegisterActivityFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        final EditText emailEdt = (EditText) getActivity().findViewById(R.id.email_register);
+        final EditText passEdt = (EditText) getActivity().findViewById(R.id.pass_register);
+
+        emailEdt.setText(mEmail);
+        passEdt.setText(mPass);
+
+        // dang ky tai khoan
+        getActivity().findViewById(R.id.button_register).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // dk voi email va pass
+                ((MainActivity)getActivity()).getFirebaseRefer().createUser(emailEdt.getText().toString(), passEdt.getText().toString(), new Firebase.ValueResultHandler<Map<String, Object>>() {
+                    @Override
+                    // dk thành công
+                    public void onSuccess(Map<String, Object> result) {
+                        Log.i(TAG, "Register " + "onSuccess: ");
+                    }
+                    @Override
+                    public void onError(FirebaseError firebaseError) {
+                        // there was an error
+                        Log.i(TAG, "Register " + "onError: ");
+                    }
+                });
+            }
+        });
     }
 
     /**
