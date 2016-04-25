@@ -3,13 +3,13 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:background="@color/colorChatApp"
-             tools:context=".Fragment.ChatFragment.ChatActivityFragment">
+             tools:context="dhbk.android.gps_osm_fragment.Fragment.ChatFragment.RegisterActivityFragment">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/title_chat"
-        android:text="ChatApp"
+        android:text="Register"
         android:textSize="60sp"
         android:textColor="@color/colorWhite"
         android:layout_gravity="center_horizontal"
@@ -30,23 +30,22 @@
         android:layout_marginTop="50dp"
         android:hint="Password"/>
 
-    <Button
+    <EditText
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/bg_edittext"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:layout_marginTop="110dp"
-        android:background="@drawable/bg_edittext_normal"
-        android:backgroundTint="@color/colorOrange"
-        android:hint="Login"
-        android:textColor="@color/colorWhite"/>
+        android:layout_marginTop="100dp"
+        android:hint="Nick name"/>
 
     <Button
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:layout_marginTop="170dp"
+        android:layout_marginTop="160dp"
         android:background="@drawable/bg_edittext_normal"
         android:backgroundTint="@android:color/transparent"
         android:hint="Sign up"
         android:textColor="@color/colorWhite"/>
+
 </FrameLayout>
