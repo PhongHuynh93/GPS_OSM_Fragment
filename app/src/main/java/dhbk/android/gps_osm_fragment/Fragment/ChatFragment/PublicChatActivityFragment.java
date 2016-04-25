@@ -76,6 +76,7 @@ public class PublicChatActivityFragment extends Fragment {
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitle("Public Chat");
 
         chatAdapter = new ChatAdapter(mChatList, mIdDevice);
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view_chat);
