@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimaryDark"
+            android:title="Public Chat"
             app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
         <!--android:layout_height="?attr/actionBarSize"-->
@@ -53,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="8dp"
-            app:backgroundTint="@color/colorOrange"
+            app:backgroundTint="@color/colorChatApp"
             android:src="@drawable/ic_send"/>
 
     </LinearLayout>
