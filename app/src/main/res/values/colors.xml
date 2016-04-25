@@ -10,5 +10,7 @@
     <!--fab-->
     <color name="colorBlue">#0288D1</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorChatApp">#01579B</color>
+
+    <!--chat app-->
+    <color name="colorChatApp">#26A69A</color>
 </resources>

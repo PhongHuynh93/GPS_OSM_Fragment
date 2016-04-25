@@ -5,5 +5,15 @@
              android:background="@color/colorChatApp"
              tools:context="dhbk.android.gps_osm_fragment.Fragment.ChatActivityFragment">
 
-   
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/title_chat"
+        android:text="ChatApp"
+        android:textSize="60sp"
+        android:textColor="@color/colorWhite"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="90dp" />
+
+
 </FrameLayout>
