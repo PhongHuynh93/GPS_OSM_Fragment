@@ -10,6 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+
+import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.R;
 
@@ -67,6 +72,27 @@ public class ChatActivityFragment extends BaseFragment {
                         .replace(R.id.root_layout, RegisterActivityFragment.newInstance(emailEdt.getText().toString(), passEdt.getText().toString()))
                         .addToBackStack(null)
                         .commit();
+            }
+        });
+
+        // TODO: 4/25/16 add login
+        getActivity().findViewById(R.id.button_login).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // thay bang fragment register
+                ((MainActivity)getActivity()).getFirebaseRefer().authWithPassword(emailEdt.getText().toString(), passEdt.getText().toString(), new Firebase.AuthResultHandler() {
+                    @Override
+                    public void onAuthenticated(AuthData authData) {
+                        // TODO: 4/25/16 go to fragment private chat or public chat
+                        
+                    }
+                    @Override
+                    public void onAuthenticationError(FirebaseError firebaseError) {
+                        // there was an error
+                        // TODO: 4/25/16 make snackbar
+                    }
+                });
+
             }
         });
     }

@@ -4,8 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +28,11 @@ import dhbk.android.gps_osm_fragment.R;
  * create an instance of this fragment.
  */
 public class RegisterActivityFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_EMAIL = "param1";
+    private static final String ARG_PASS = "param2";
     private static final String TAG = "RegisterFragment";
 
-    // TODO: Rename and change types of parameters
     private String mEmail;
     private String mPass;
 
@@ -44,20 +42,11 @@ public class RegisterActivityFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RegisterActivityFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static RegisterActivityFragment newInstance(String param1, String param2) {
         RegisterActivityFragment fragment = new RegisterActivityFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_EMAIL, param1);
+        args.putString(ARG_PASS, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,8 +55,8 @@ public class RegisterActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mEmail = getArguments().getString(ARG_PARAM1);
-            mPass = getArguments().getString(ARG_PARAM2);
+            mEmail = getArguments().getString(ARG_EMAIL);
+            mPass = getArguments().getString(ARG_PASS);
         }
     }
 
@@ -114,12 +103,22 @@ public class RegisterActivityFragment extends Fragment {
                     @Override
                     // dk thành công
                     public void onSuccess(Map<String, Object> result) {
-                        Log.i(TAG, "Register " + "onSuccess: ");
+                        // TODO: 4/25/16 go to another layout (not addToBackStack)
+                        Snackbar.make(getActivity().findViewById(R.id.register_coordinator), "Register Success", Snackbar.LENGTH_LONG)
+                                .show();
+
                     }
                     @Override
                     public void onError(FirebaseError firebaseError) {
-                        // there was an error
-                        Log.i(TAG, "Register " + "onError: ");
+                        //  4/25/16 go to login because your account has already registered
+                        Snackbar.make(getActivity().findViewById(R.id.register_coordinator), firebaseError.getMessage(), Snackbar.LENGTH_LONG)
+                                .setAction("LOG IN", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        getActivity().getSupportFragmentManager().popBackStack();
+                                    }
+                                })
+                                .show();
                     }
                 });
             }
