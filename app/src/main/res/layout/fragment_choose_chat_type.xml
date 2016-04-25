@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/login_coordinator"
+    android:id="@+id/type_chat_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,54 +13,51 @@
                  android:background="@color/colorChatApp"
                  tools:context=".Fragment.ChatFragment.ChatActivityFragment">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="90dp"
-            android:text="ChatApp"
-            android:textColor="@color/colorWhite"
-            android:textSize="60sp"/>
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/email_login"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:background="@drawable/bg_edittext"
-            android:hint="Email"
-            android:inputType="textEmailAddress"/>
+            <TextView
+                android:id="@+id/nick_choose_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Hi, "
+                android:textColor="@color/colorWhite"
+                android:textSize="40sp"/>
 
-        <EditText
-            android:id="@+id/password_login"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/bg_edittext"
-            android:hint="Password"
-            android:inputType="textPassword"/>
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Please choose your chat room!"
+                android:textColor="@color/colorWhite"/>
+        </LinearLayout>
+
 
         <Button
-            android:id="@+id/button_login"
+            android:id="@+id/button_private_chat"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_marginTop="110dp"
             android:background="@drawable/bg_edittext_normal"
             android:backgroundTint="@color/colorOrange"
-            android:hint="Login"
+            android:hint="Private Chat"
             android:textColor="@color/colorWhite"/>
 
         <Button
-            android:id="@+id/button_signup"
+            android:id="@+id/button_public_chat"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_marginTop="170dp"
+            android:layout_marginTop="70dp"
             android:background="@drawable/bg_edittext_normal"
             android:backgroundTint="@android:color/transparent"
-            android:hint="Sign up"
+            android:hint="Public Chat"
             android:textColor="@color/colorWhite"/>
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -10,19 +10,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 
-import dhbk.android.gps_osm_fragment.Fragment.ChatActivityFragment;
+import dhbk.android.gps_osm_fragment.Fragment.ChatFragment.ChatActivityFragment;
 import dhbk.android.gps_osm_fragment.Fragment.MainActivityFragment;
+import dhbk.android.gps_osm_fragment.Help.Config;
 import dhbk.android.gps_osm_fragment.R;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, MainActivityFragment.MainActivityFragmentInterface, ChatActivityFragment.OnFragmentChatInteractionListener {
 
     private GoogleApiClient mGoogleApiClient;
+
+    private Firebase mFirebaseRefer;
+
+    public Firebase getFirebaseRefer() {
+        return mFirebaseRefer;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.root_layout, ChatActivityFragment.newInstance())
-                            .addToBackStack(null)
                             .commit();
                 }
                 DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -67,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void initializeVariable() {
         // build + connect to google client;
         buildGoogleApiClient();
+        // inialize firebase
+        Config.getFirebaseInitialize(getApplicationContext());
+        mFirebaseRefer = Config.getFirebaseReference();
     }
 
     // When press "Back",
