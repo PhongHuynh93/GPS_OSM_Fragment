@@ -13,4 +13,5 @@
 
     <!--chat app-->
     <color name="colorChatApp">#26A69A</color>
+    <color name="colorOrange">#F57C00</color>
 </resources>
