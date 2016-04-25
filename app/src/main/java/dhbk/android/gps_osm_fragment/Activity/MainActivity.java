@@ -15,7 +15,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 
-import dhbk.android.gps_osm_fragment.Fragment.ChatActivityFragment;
+import dhbk.android.gps_osm_fragment.Fragment.ChatFragment.ChatActivityFragment;
 import dhbk.android.gps_osm_fragment.Fragment.MainActivityFragment;
 import dhbk.android.gps_osm_fragment.R;
 

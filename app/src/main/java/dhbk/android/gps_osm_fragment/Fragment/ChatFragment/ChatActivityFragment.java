@@ -1,4 +1,4 @@
-package dhbk.android.gps_osm_fragment.Fragment;
+package dhbk.android.gps_osm_fragment.Fragment.ChatFragment;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.R;
 
 /**
