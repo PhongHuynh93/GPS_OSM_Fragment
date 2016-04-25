@@ -11,4 +11,7 @@
     <!--search-->
     <dimen name="searchbar_margintop">31dp</dimen>
     <dimen name="searchbar_marginleft">10dp</dimen>
+    <dimen name="padding_login">16dp</dimen>
+    <dimen name="image_height">100dp</dimen>
+    <dimen name="top_image">64dp</dimen>
 </resources>

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.root_layout, ChatActivityFragment.newInstance())
-                            .addToBackStack(null)
                             .commit();
                 }
                 DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void initializeVariable() {
         // build + connect to google client;
         buildGoogleApiClient();
+
     }
 
     // When press "Back",
