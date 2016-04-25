@@ -3,6 +3,7 @@ package dhbk.android.gps_osm_fragment.Fragment;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -31,11 +32,6 @@ import dhbk.android.gps_osm_fragment.Voice.VIetnameseSpeak;
 public abstract class BaseFragment extends Fragment implements MapEventsReceiver {
     private MapView mMapView;
     private IMapController mIMapController;
-
-    public BaseFragment() {
-        
-    }
-
 
 
     public void makeMapDefaultSetting() {
@@ -130,6 +126,9 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         return false;
     }
 
-
+    @NonNull
+    public String retrieveSubString(String s) {
+        return s.substring(0, s.lastIndexOf("@"));
+    }
 
 }
