@@ -1,13 +1,61 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="dhbk.android.gps_osm_fragment.Fragment.ChatFragment.PublicChatActivityFragment">
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!-- TODO - fix this public layout -->
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimaryDark"
+            android:title="Public Chat"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+        <!--android:layout_height="?attr/actionBarSize"-->
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="public chat"/>
+        android:layout_marginBottom="80dp"
+        android:scrollbars="vertical"/>
 
-</FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/chat_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/edit_txt_message"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:background="@drawable/bg_edittext"
+            android:hint="Sent" />
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/button_sent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            app:backgroundTint="@color/colorChatApp"
+            android:src="@drawable/ic_send"/>
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
