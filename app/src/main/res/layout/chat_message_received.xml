@@ -14,7 +14,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/in_message_bg">
+        android:background="@drawable/out_message_bg">
 
         <TextView
             android:id="@+id/txt_message"
