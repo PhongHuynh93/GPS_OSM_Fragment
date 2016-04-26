@@ -67,7 +67,6 @@ public class ChooseChatTypeFragment extends Fragment {
         });
 
         // make private chat
-        // TODO: 4/26/16 go to private char
         getActivity().findViewById(R.id.button_private_chat).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
