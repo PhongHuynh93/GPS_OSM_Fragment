@@ -94,10 +94,6 @@ public class RegisterActivityFragment extends BaseFragment {
                             String childSubString = retrieveSubString(emailEdt.getText().toString());
                             ((MainActivity)getActivity()).getFirebaseRefer().child(childSubString).updateChildren(nickMap);
                             // root/nickList/@@@@/
-                            // TODO: 4/26/16 pass object Nick
-
-//                            Map<String, String> nickList = new HashMap<>();
-//                            nickList.put("nick", nickEdt.getText().toString());
                             ((MainActivity)getActivity()).getFirebaseRefer().child("nickList").push().setValue(new Nick(nickEdt.getText().toString()));
 
 
