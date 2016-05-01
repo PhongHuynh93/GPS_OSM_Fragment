@@ -4,6 +4,8 @@ package dhbk.android.gps_osm_fragment.Fragment.ChatFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,17 +42,19 @@ public class PrivateChatActivityFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitle("Private Chat");
 
         ListView messagesView = (ListView) getActivity().findViewById(R.id.list_private_chat);
 
         Config.getFirebaseInitialize(getContext());
         Firebase ref = Config.getFirebaseReference().child("nickList");
 
-        mAdapter = new FirebaseListAdapter<Nick>(getActivity(), Nick.class, android.R.layout.two_line_list_item, ref) {
+        mAdapter = new FirebaseListAdapter<Nick>(getActivity(), Nick.class, R.layout.list_chat_private, ref) {
             @Override
             protected void populateView(View view, Nick nick, int position) {
-                ((TextView)view.findViewById(android.R.id.text1)).setText(nick.getNick());
+                ((TextView)view.findViewById(R.id.message)).setText(nick.getNick());
             }
         };
         messagesView.setAdapter(mAdapter);
