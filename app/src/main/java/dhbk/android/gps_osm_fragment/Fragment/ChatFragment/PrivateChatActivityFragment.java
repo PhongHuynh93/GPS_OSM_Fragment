@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,6 +22,8 @@ import dhbk.android.gps_osm_fragment.R;
 
 public class PrivateChatActivityFragment extends Fragment {
     private FirebaseListAdapter<Nick> mAdapter;
+    private String mNickUser;
+    private String mEmailUser;
 
     public PrivateChatActivityFragment() {
         // Required empty public constructor
@@ -50,24 +53,30 @@ public class PrivateChatActivityFragment extends Fragment {
         Config.getFirebaseInitialize(getContext());
         Firebase ref = Config.getFirebaseReference().child("nickList");
 
+        // get nick, email from from database
+
         mAdapter = new FirebaseListAdapter<Nick>(getActivity(), Nick.class, R.layout.list_chat_private, ref) {
             @Override
             protected void populateView(View view, Nick nick, int position) {
                 // TODO: 5/1/16 add imageview (user on/ off)
-                ((TextView)view.findViewById(R.id.message)).setText(nick.getNick());
+                mNickUser = nick.getNick();
+                mEmailUser = nick.getEmail();
+                mEmailUser += "@gmail.com";
+                ((TextView) view.findViewById(R.id.message)).setText(mNickUser);
+                ((TextView) view.findViewById(R.id.email)).setText(mEmailUser);
             }
         };
         messagesView.setAdapter(mAdapter);
 
-        // TODO: 5/1/16 set on click listview, open fragment
-        messagesView.setOnClickListener(new View.OnClickListener() {
+//        // TODO: 5/1/16 set on click listview, open fragment
+        messagesView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                final RageComicDetailsFragment detailsFragment =
-                        RageComicDetailsFragment.newInstance(imageResId, name, description, url);
-                getSupportFragmentManager()
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final PrivateChatEachUserFragment eachUserFragment =
+                        PrivateChatEachUserFragment.newInstance(mNickUser, mEmailUser);
+                getFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.root_layout, detailsFragment, "rageComicDetails")
+                        .replace(R.id.root_layout, eachUserFragment)
                         .addToBackStack(null)
                         .commit();
             }
