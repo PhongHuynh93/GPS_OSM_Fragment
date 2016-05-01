@@ -72,7 +72,7 @@ public class ChooseChatTypeFragment extends Fragment {
             public void onClick(View v) {
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.root_layout, PrivateChatActivityFragment.newInstance())
+                        .replace(R.id.root_layout, PrivateChatActivityFragment.newInstance(mNick))
                         .addToBackStack(null)
                         .commit();
             }

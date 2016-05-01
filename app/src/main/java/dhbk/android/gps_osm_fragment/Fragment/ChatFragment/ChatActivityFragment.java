@@ -83,7 +83,7 @@ public class ChatActivityFragment extends BaseFragment {
         getActivity().findViewById(R.id.button_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // thay bang fragment register
+                // thay bang fragment login
                 ((MainActivity)getActivity()).getFirebaseRefer().authWithPassword(emailEdt.getText().toString(), passEdt.getText().toString(), new Firebase.AuthResultHandler() {
                     @Override
                     public void onAuthenticated(AuthData authData) {

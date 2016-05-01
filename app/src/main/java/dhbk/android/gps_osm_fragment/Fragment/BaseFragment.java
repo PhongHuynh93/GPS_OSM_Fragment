@@ -131,4 +131,17 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         return s.substring(0, s.lastIndexOf("@"));
     }
 
+    public String mergeNick(String a, String b) {
+        // merge 2 string nhưng theo abc
+        int compareString = a.compareTo(b);
+        if (compareString < 1) {
+            // la a đứng trước b
+            return a + b;
+        } else if (compareString > 1) {
+            return b + a;
+        } else {
+            return a + b;
+        }
+    }
+
 }

@@ -3,7 +3,6 @@ package dhbk.android.gps_osm_fragment.Fragment.ChatFragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -16,22 +15,37 @@ import android.widget.TextView;
 import com.firebase.client.Firebase;
 import com.firebase.ui.FirebaseListAdapter;
 
+import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.Help.Config;
 import dhbk.android.gps_osm_fragment.Help.Nick;
 import dhbk.android.gps_osm_fragment.R;
 
-public class PrivateChatActivityFragment extends Fragment {
+public class PrivateChatActivityFragment extends BaseFragment {
+    public static final String TAG = "PrivateChatActivityFragment";
+    private static final String ARG_MYNICK = "my-nick";
     private FirebaseListAdapter<Nick> mAdapter;
     private String mNickUser;
     private String mEmailUser;
+    private String mMyNick;
 
     public PrivateChatActivityFragment() {
         // Required empty public constructor
     }
 
-    public static PrivateChatActivityFragment newInstance() {
+    public static PrivateChatActivityFragment newInstance(String myNick) {
         PrivateChatActivityFragment fragment = new PrivateChatActivityFragment();
+        final Bundle args = new Bundle();
+        args.putString(ARG_MYNICK, myNick);
+        fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mMyNick = getArguments().getString(ARG_MYNICK);
+        }
     }
 
     @Override
@@ -48,7 +62,7 @@ public class PrivateChatActivityFragment extends Fragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         toolbar.setTitle("Private Chat");
 
-        ListView messagesView = (ListView) getActivity().findViewById(R.id.list_private_chat);
+        final ListView messagesView = (ListView) getActivity().findViewById(R.id.list_private_chat);
 
         Config.getFirebaseInitialize(getContext());
         Firebase ref = Config.getFirebaseReference().child("nickList");
@@ -61,24 +75,28 @@ public class PrivateChatActivityFragment extends Fragment {
                 // TODO: 5/1/16 add imageview (user on/ off)
                 mNickUser = nick.getNick();
                 mEmailUser = nick.getEmail();
-                mEmailUser += "@gmail.com";
+                String emailUserLong = mEmailUser + "@gmail.com";
                 ((TextView) view.findViewById(R.id.message)).setText(mNickUser);
-                ((TextView) view.findViewById(R.id.email)).setText(mEmailUser);
+                ((TextView) view.findViewById(R.id.email)).setText(emailUserLong);
             }
         };
         messagesView.setAdapter(mAdapter);
 
-//        // TODO: 5/1/16 set on click listview, open fragment
         messagesView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String nickFriend = ((TextView)view.findViewById(R.id.message)).getText().toString();
+
+                String bothNick = mergeNick(mMyNick, nickFriend);
                 final PrivateChatEachUserFragment eachUserFragment =
-                        PrivateChatEachUserFragment.newInstance(mNickUser, mEmailUser);
+                        PrivateChatEachUserFragment.newInstance(bothNick, nickFriend);
                 getFragmentManager()
                         .beginTransaction()
                         .replace(R.id.root_layout, eachUserFragment)
                         .addToBackStack(null)
                         .commit();
+
+
             }
         });
     }
