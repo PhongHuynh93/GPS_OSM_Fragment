@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO: trang trí lại 1 row cho listview -->
+<!-- TODO: thêm icon bao hiệu người đó đang on hay off -->
 <android.support.v7.widget.CardView
     android:id="@+id/cardView"
     android:layout_width="match_parent"
