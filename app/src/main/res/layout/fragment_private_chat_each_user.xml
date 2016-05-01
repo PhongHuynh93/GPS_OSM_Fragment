@@ -1,3 +1,5 @@
+<!-- TODO: Update blank fragment layout to show private message -->
+
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -37,31 +39,31 @@
 
 
     <LinearLayout
-            android:id="@+id/chat_controls"
-            android:layout_width="match_parent"
+        android:id="@+id/chat_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/edit_txt_message"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:background="@drawable/bg_edittext"
+            android:hint="Sent" />
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/button_sent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_margin="16dp"
-            android:orientation="horizontal" >
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            app:backgroundTint="@color/colorChatApp"
+            android:src="@drawable/ic_send"/>
 
-            <EditText
-                android:id="@+id/edit_txt_message"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".5"
-                android:background="@drawable/bg_edittext"
-                android:hint="Sent" />
-
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/button_sent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="8dp"
-                app:backgroundTint="@color/colorChatApp"
-                android:src="@drawable/ic_send"/>
-
-        </LinearLayout>
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

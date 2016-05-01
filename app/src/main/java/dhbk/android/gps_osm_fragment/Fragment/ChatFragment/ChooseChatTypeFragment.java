@@ -48,19 +48,31 @@ public class ChooseChatTypeFragment extends Fragment {
     }
 
 
-    // TODO: 4/25/16 go to another fragment when click button private
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         final TextView nick = (TextView) getActivity().findViewById(R.id.nick_choose_type);
         nick.setText("Hi, " + mNick);
 
+        // make public chat
         getActivity().findViewById(R.id.button_public_chat).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.root_layout, PublicChatActivityFragment.newInstance(mNick))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        // make private chat
+        getActivity().findViewById(R.id.button_private_chat).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.root_layout, PrivateChatActivityFragment.newInstance(mNick))
                         .addToBackStack(null)
                         .commit();
             }

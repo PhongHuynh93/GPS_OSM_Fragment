@@ -17,6 +17,7 @@ import java.util.Map;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
+import dhbk.android.gps_osm_fragment.Help.Nick;
 import dhbk.android.gps_osm_fragment.R;
 
 
@@ -87,15 +88,16 @@ public class RegisterActivityFragment extends BaseFragment {
                         @Override
                         // dk thành công
                         public void onSuccess(Map<String, Object> result) {
+                            // TODO: 5/1/16 up email to firebase
                             Map<String, Object> nickMap = new HashMap<>();
-                            // root/$email$/nick
+                            // put nick, email to nickList
                             nickMap.put("nick", nickEdt.getText().toString());
                             String childSubString = retrieveSubString(emailEdt.getText().toString());
+                            nickMap.put("email", childSubString);
+
                             ((MainActivity)getActivity()).getFirebaseRefer().child(childSubString).updateChildren(nickMap);
                             // root/nickList/@@@@/
-                            Map<String, String> nickList = new HashMap<>();
-                            nickList.put("nick", nickEdt.getText().toString());
-                            ((MainActivity)getActivity()).getFirebaseRefer().child("nickList").push().setValue(nickList);
+                            ((MainActivity)getActivity()).getFirebaseRefer().child("nickList").push().setValue(new Nick(nickEdt.getText().toString(), childSubString));
 
 
                             getActivity().getSupportFragmentManager()
