@@ -79,6 +79,23 @@ public class DirectionActivityFragment extends BaseFragment {
         makeMapDefaultSetting();
         mMapView = getMapView();
         declareSearch();
+//
+//        // set dest place
+//        if (MainActivity.mPlace != null) {
+//            Location place = new Location("destinationPlace");
+//            place.setLatitude(MainActivity.mPlace.getLatLng().latitude);
+//            place.setLongitude(MainActivity.mPlace.getLatLng().longitude);
+//            setDestinationPlace(place);
+//        }
+//
+//        // set startplace
+//        if (startPlace == null) {
+//            Location place = getLocation();
+//            setStartPlace(place);
+//
+//        }
+
+        // TODO: 5/3/16 declareBottomNavigation
     }
 
     // khai bao listen cho thanh edittext, set text cho destination edittext
