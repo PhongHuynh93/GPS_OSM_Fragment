@@ -143,7 +143,6 @@ public class MainActivityFragment extends BaseFragment {
         touchLocation.setLongitude(p.getLongitude());
         setMarkerAtLocation(touchLocation, Constant.MARKER);
 
-        // TODO: 5/3/16 chuyen thanh address
         startIntentService(touchLocation);
         return true;
     }
@@ -194,8 +193,7 @@ public class MainActivityFragment extends BaseFragment {
     // display address in bottom sheet
     private void displayAddressOutput(String addressOutput) {
         Log.i(TAG, "displayAddressOutput: " + addressOutput);
-        // TODO: 4/12/16 phong - make address on bottom bar and on search view
-        BottomSheetFragment bottomSheetFragment = (BottomSheetFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.map_bottom_sheets);
+        BottomSheetFragment bottomSheetFragment = (BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets);
         BottomSheetBehavior<View> bottomSheetBehavior = bottomSheetFragment.getBottomSheetBehavior();
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             // add place details

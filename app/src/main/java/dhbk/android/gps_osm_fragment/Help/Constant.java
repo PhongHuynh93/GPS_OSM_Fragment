@@ -27,8 +27,8 @@ public class Constant {
     public static final int ZOOM = 14;
 
     // service to reverse location to address
-    public static final String PACKAGE_NAME = "dhbk.android.testgooglesearchreturn.Activity";
-    public static final String RECEIVER = PACKAGE_NAME + ".MainActivity";
+    public static final String PACKAGE_NAME = "dhbk.android.gps_osm_fragment.Fragment";
+    public static final String RECEIVER = PACKAGE_NAME + ".MainActivityFragment";
     public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME + ".LOCATION_DATA_EXTRA";
     public static final String RESULT_DATA_KEY = PACKAGE_NAME + ".RESULT_DATA_KEY";
     public static final int FAILURE_RESULT = 1;
