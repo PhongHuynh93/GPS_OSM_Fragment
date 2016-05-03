@@ -27,9 +27,21 @@ public class BottomSheetFragment extends Fragment {
     private View mRootView;
     private BottomSheetBehavior<View> mBottomSheetBehavior;
     public static ArrayList<PhotoTask.AttributedPhoto> mArrayListAttributedPhoto;
+    private TextView mPlaceName;
+    private TextView mAddressName;
+    private TextView mPhoneName;
+    private TextView mWebsiteName;
 
     public BottomSheetFragment() {
         // Required empty public constructor
+    }
+
+    public BottomSheetBehavior<View> getBottomSheetBehavior() {
+        return mBottomSheetBehavior;
+    }
+
+    public TextView getPlaceName() {
+        return mPlaceName;
     }
 
     public static BottomSheetFragment newInstance() {
@@ -68,6 +80,10 @@ public class BottomSheetFragment extends Fragment {
 
             }
         });
+        mPlaceName = (TextView) mRootView.findViewById(R.id.place_name);
+        mAddressName = (TextView) mRootView.findViewById(R.id.address_name);
+        mPhoneName = (TextView) mRootView.findViewById(R.id.phone_name);
+        mWebsiteName = (TextView) mRootView.findViewById(R.id.website_name);
     }
 
     @Override
@@ -78,23 +94,19 @@ public class BottomSheetFragment extends Fragment {
 
     // add place to this
     public  void addPlaceToBottomSheet(Place place) {
-        final TextView placeName = (TextView) mRootView.findViewById(R.id.place_name);
-        final TextView addressName = (TextView) mRootView.findViewById(R.id.address_name);
-        final TextView phoneName = (TextView) mRootView.findViewById(R.id.phone_name);
-        final TextView websiteName = (TextView) mRootView.findViewById(R.id.website_name);
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             // add place details
             if (place.getName() != null) {
-                placeName.setText(place.getName());
+                mPlaceName.setText(place.getName());
             }
             if (place.getAddress() != null) {
-                addressName.setText(place.getAddress());
+                mAddressName.setText(place.getAddress());
             }
             if (place.getPhoneNumber() != null) {
-                phoneName.setText(place.getPhoneNumber());
+                mPhoneName.setText(place.getPhoneNumber());
             }
             if (place.getWebsiteUri() != null) {
-                websiteName.setText(place.getWebsiteUri() + "");
+                mWebsiteName.setText(place.getWebsiteUri() + "");
             }
 
             // add place photos
