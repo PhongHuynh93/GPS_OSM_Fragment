@@ -1,4 +1,4 @@
-package dhbk.android.gps_osm_fragment.Fragment;
+package dhbk.android.gps_osm_fragment.Fragment.DirectionFragment;
 
 import android.Manifest;
 import android.content.Context;
@@ -27,6 +27,8 @@ import org.osmdroid.bonuspack.overlays.InfoWindow;
 import org.osmdroid.util.GeoPoint;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
+import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
+import dhbk.android.gps_osm_fragment.Fragment.BottomSheetFragment;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.Help.FetchAddressIntentService;
 import dhbk.android.gps_osm_fragment.R;
@@ -75,7 +77,12 @@ public class MainActivityFragment extends BaseFragment {
             @Override
             public void onPlaceSelected(Place place) {
                 ((BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets)).addPlaceToBottomSheet(place);
-                // TODO: 5/3/16 add marker when return place
+                // remove marker on the map, center at that point and add marker.
+                clearMap();
+                Location placeLocation = new Location("Test");
+                placeLocation.setLatitude(place.getLatLng().latitude);
+                placeLocation.setLongitude(place.getLatLng().longitude);
+                setMarkerAtLocation(placeLocation, Constant.MARKER);
             }
 
             @Override
@@ -106,6 +113,8 @@ public class MainActivityFragment extends BaseFragment {
         floatingActionButtonDirection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // TODO: 5/3/16 go to another fragment
+
             }
         });
 
