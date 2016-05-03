@@ -33,6 +33,13 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
     private MapView mMapView;
     private IMapController mIMapController;
 
+    public MapView getMapView() {
+        return mMapView;
+    }
+
+    public IMapController getIMapController() {
+        return mIMapController;
+    }
 
     public void makeMapDefaultSetting() {
         mMapView = (MapView) getActivity().findViewById(R.id.map); // map
@@ -42,6 +49,8 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         mIMapController.setZoom(Constant.ZOOM);
         GeoPoint startPoint = new GeoPoint(10.772241, 106.657676);
         mIMapController.setCenter(startPoint);
+        // add listen when tap the map.
+        clearMap();
     }
 
     // clear map, but add eventlocation

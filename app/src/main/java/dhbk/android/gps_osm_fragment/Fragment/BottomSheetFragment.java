@@ -27,9 +27,18 @@ public class BottomSheetFragment extends Fragment {
     private View mRootView;
     private BottomSheetBehavior<View> mBottomSheetBehavior;
     public static ArrayList<PhotoTask.AttributedPhoto> mArrayListAttributedPhoto;
+    private TextView placeName;
 
     public BottomSheetFragment() {
         // Required empty public constructor
+    }
+
+    public BottomSheetBehavior<View> getBottomSheetBehavior() {
+        return mBottomSheetBehavior;
+    }
+
+    public TextView getPlaceName() {
+        return placeName;
     }
 
     public static BottomSheetFragment newInstance() {
@@ -78,7 +87,7 @@ public class BottomSheetFragment extends Fragment {
 
     // add place to this
     public  void addPlaceToBottomSheet(Place place) {
-        final TextView placeName = (TextView) mRootView.findViewById(R.id.place_name);
+        placeName = (TextView) mRootView.findViewById(R.id.place_name);
         final TextView addressName = (TextView) mRootView.findViewById(R.id.address_name);
         final TextView phoneName = (TextView) mRootView.findViewById(R.id.phone_name);
         final TextView websiteName = (TextView) mRootView.findViewById(R.id.website_name);
