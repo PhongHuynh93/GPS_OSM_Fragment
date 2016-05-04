@@ -124,12 +124,12 @@ public class MainActivityFragment extends BaseFragment {
                 if (mPlace == null) {
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(null), "rageComicDetails")
+                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(null, 0, 0), "rageComicDetails")
                             .commit();
                 } else {
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(mPlace.getName().toString()), "rageComicDetails")
+                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(mPlace.getName().toString(), mPlace.getLatLng().latitude, mPlace.getLatLng().longitude), "rageComicDetails")
                             .commit();
                 }
             }
@@ -138,8 +138,19 @@ public class MainActivityFragment extends BaseFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
+
     }
 
     @Override
@@ -228,5 +239,6 @@ public class MainActivityFragment extends BaseFragment {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
     }
+
 
 }
