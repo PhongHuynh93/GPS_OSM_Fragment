@@ -28,6 +28,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
+
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:design:23.3.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
@@ -41,5 +42,4 @@ dependencies {
     compile 'com.roughike:bottom-bar:1.2.7'
     compile 'com.android.support:recyclerview-v7:23.3.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-
 }
