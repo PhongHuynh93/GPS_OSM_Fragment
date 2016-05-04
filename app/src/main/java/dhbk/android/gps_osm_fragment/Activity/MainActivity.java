@@ -1,9 +1,9 @@
 package dhbk.android.gps_osm_fragment.Activity;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -18,11 +18,12 @@ import com.google.android.gms.location.places.Places;
 
 import dhbk.android.gps_osm_fragment.Fragment.ChatFragment.ChatActivityFragment;
 import dhbk.android.gps_osm_fragment.Fragment.DirectionFragment.MainActivityFragment;
+import dhbk.android.gps_osm_fragment.Fragment.ShareFragment.ShareActivityFragment;
 import dhbk.android.gps_osm_fragment.Help.Config;
 import dhbk.android.gps_osm_fragment.R;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, MainActivityFragment.MainActivityFragmentInterface, ChatActivityFragment.OnFragmentChatInteractionListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -46,13 +47,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             public boolean onNavigationItemSelected(MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.direction) {
+                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.root_layout, MainActivityFragment.newInstance())
+                            .commit();
 //                    Intent intent = new Intent(this, MainActivity.class);
 //                    startActivity(intent);
                 } else if (id == R.id.chat) {
+                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.root_layout, ChatActivityFragment.newInstance())
                             .commit();
+                } else if (id == R.id.nav_tracking) {
+                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.root_layout, ShareActivityFragment.newInstance())
+                            .commit();
+                } else if (id == R.id.nav_gallery) {
+                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//                    getSupportFragmentManager()
+//                            .beginTransaction()
+//                            .replace(R.id.root_layout, ChatActivityFragment.newInstance())
+//                            .commit();
                 }
                 DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -110,15 +129,4 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return mGoogleApiClient;
     }
 
-    // TODO: 4/24/16  go to direction Fragment
-    @Override
-    public void onClickDirection() {
-
-    }
-
-    // TODO: 4/24/16 chat method
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
 }

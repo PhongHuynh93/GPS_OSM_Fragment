@@ -24,5 +24,7 @@
     <string name="start_point">Choosing starting point</string>
     <string name="des_point">Choosing ending point</string>
     <string name="yourLocation">Your location</string>
+    <string name="track">Tracking</string>
+    <string name="galery">Saved Trip</string>
 </resources>
 

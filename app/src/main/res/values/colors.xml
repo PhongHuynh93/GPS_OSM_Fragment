@@ -14,4 +14,12 @@
     <!--chat app-->
     <color name="colorChatApp">#26A69A</color>
     <color name="colorOrange">#F57C00</color>
+    <color name="black">#000000</color>
+
+    <!--color bottom navigation bar-->
+    <color name="theme_color">#000000</color>
+    <color name="bot1">#795548</color>
+    <color name="bot2">#7B1FA2</color>
+    <color name="bot3">#FF5252</color>
+    <color name="bot4">#FF9800</color>
 </resources>
