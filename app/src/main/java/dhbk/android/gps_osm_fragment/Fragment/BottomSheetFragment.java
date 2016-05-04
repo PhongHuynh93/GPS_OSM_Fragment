@@ -68,7 +68,7 @@ public class BottomSheetFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        mBottomSheetBehavior = BottomSheetBehavior.from(mRootView);
+        mBottomSheetBehavior = BottomSheetBehavior.from(getParentFragment().getView().findViewById(R.id.map_bottom_sheets));
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
