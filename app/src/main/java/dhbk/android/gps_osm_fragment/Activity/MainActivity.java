@@ -18,6 +18,7 @@ import com.google.android.gms.location.places.Places;
 
 import dhbk.android.gps_osm_fragment.Fragment.ChatFragment.ChatActivityFragment;
 import dhbk.android.gps_osm_fragment.Fragment.DirectionFragment.MainActivityFragment;
+import dhbk.android.gps_osm_fragment.Fragment.ShareFragment.SavedListTripActivityFragment;
 import dhbk.android.gps_osm_fragment.Fragment.ShareFragment.ShareActivityFragment;
 import dhbk.android.gps_osm_fragment.Help.Config;
 import dhbk.android.gps_osm_fragment.R;
@@ -68,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             .commit();
                 } else if (id == R.id.nav_gallery) {
                     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//                    getSupportFragmentManager()
-//                            .beginTransaction()
-//                            .replace(R.id.root_layout, ChatActivityFragment.newInstance())
-//                            .commit();
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.root_layout, SavedListTripActivityFragment.newInstance())
+                            .commit();
                 }
                 DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawerLayout.closeDrawer(GravityCompat.START);

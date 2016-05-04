@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">@color/colorChatApp</color>
-    <color name="colorAccent">#FF4081</color>
+    <!--<color name="colorPrimary">#3F51B5</color>-->
+    <!--<color name="colorPrimaryDark">@color/colorChatApp</color>-->
+    <!--<color name="colorAccent">#FF4081</color>-->
+
+    <color name="colorPrimary">#64B5F6</color>
+    <color name="colorPrimaryLight">#E3F2FD</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#FFFFFF</color>
 
     <!--nav bottom-->
     <color name="bottom_navigation_bar">#000000</color>
@@ -22,4 +27,5 @@
     <color name="bot2">#7B1FA2</color>
     <color name="bot3">#FF5252</color>
     <color name="bot4">#FF9800</color>
+    <color name="colorGreen">#14FF55</color>
 </resources>
