@@ -19,4 +19,12 @@
     <string name="no_location_data_provided">No location data provided</string>
     <string name="service_not_available">Sorry, the service is not available</string>
     <string name="invalid_lat_long_used">Invalid latitude or longitude used</string>
+
+    <!--bottom bar-->
+    <string name="start_point">Choosing starting point</string>
+    <string name="des_point">Choosing ending point</string>
+    <string name="yourLocation">Your location</string>
+    <string name="track">Tracking</string>
+    <string name="galery">Saved Trip</string>
 </resources>
+

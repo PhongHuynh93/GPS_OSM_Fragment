@@ -1,11 +1,8 @@
 package dhbk.android.gps_osm_fragment.Fragment.ChatFragment;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,20 +18,11 @@ import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ChatActivityFragment.OnFragmentChatInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ChatActivityFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-
 // TODO: 4/25/16 make animation when transform from fragment to fragment
 public class ChatActivityFragment extends BaseFragment {
     public static final String TAG = "ChatActivityFragment";
 
-    private OnFragmentChatInteractionListener mListener;
+//    private OnFragmentChatInteractionListener mListener;
 
     public ChatActivityFragment() {
         // Required empty public constructor
@@ -45,17 +33,17 @@ public class ChatActivityFragment extends BaseFragment {
         ChatActivityFragment fragment = new ChatActivityFragment();
         return fragment;
     }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentChatInteractionListener) {
-            mListener = (OnFragmentChatInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentChatInteractionListener");
-        }
-    }
+//
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        if (context instanceof OnFragmentChatInteractionListener) {
+//            mListener = (OnFragmentChatInteractionListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentChatInteractionListener");
+//        }
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,13 +109,13 @@ public class ChatActivityFragment extends BaseFragment {
         });
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentChatInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        mListener = null;
+//    }
+//
+//    public interface OnFragmentChatInteractionListener {
+//        void onFragmentInteraction(Uri uri);
+//    }
 }

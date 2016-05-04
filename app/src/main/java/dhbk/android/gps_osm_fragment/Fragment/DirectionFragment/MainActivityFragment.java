@@ -39,6 +39,7 @@ import dhbk.android.gps_osm_fragment.R;
 public class MainActivityFragment extends BaseFragment {
     public static final String TAG = "MainActivityFragment";
     private AddressResultReceiver mResultReceiver;
+    private Place mPlace;
 
     public static MainActivityFragment newInstance() {
         MainActivityFragment mainActivityFragment = new MainActivityFragment();
@@ -58,6 +59,11 @@ public class MainActivityFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        BottomSheetFragment bottomSheetFragment = BottomSheetFragment.newInstance();
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(R.id.map_bottom_sheets, bottomSheetFragment)
+                .commit();
         return rootView;
     }
 
@@ -76,6 +82,7 @@ public class MainActivityFragment extends BaseFragment {
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
+                mPlace = place;
                 ((BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets)).addPlaceToBottomSheet(place);
                 // remove marker on the map, center at that point and add marker.
                 clearMap();
@@ -114,15 +121,36 @@ public class MainActivityFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 // TODO: 5/3/16 go to another fragment
-
+                if (mPlace == null) {
+                    getActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(null, 0, 0), "rageComicDetails")
+                            .commit();
+                } else {
+                    getActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(mPlace.getName().toString(), mPlace.getLatLng().latitude, mPlace.getLatLng().longitude), "rageComicDetails")
+                            .commit();
+                }
             }
         });
 
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
+
     }
 
     @Override
@@ -211,5 +239,6 @@ public class MainActivityFragment extends BaseFragment {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
     }
+
 
 }
