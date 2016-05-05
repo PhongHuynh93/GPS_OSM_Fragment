@@ -194,6 +194,8 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         urlString.append("&mode=" + travelMode);
         urlString.append("&language=" + Constant.LANGUAGE);
         urlString.append("&key=" + Constant.GOOGLE_SERVER_KEY);
+
+        Log.i("BaseFragment", "makeURL: " + urlString.toString());
         return urlString.toString();
     }
 
@@ -361,6 +363,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
                     stepLocation.setLongitude(lng);
                     // get instruction
                     String instruction = step.getString("html_instructions");
+                    Log.i("BaseFragment", "drawPathWithInstruction: " + instruction);
                     // add marker
                     setMarkerAtLocation(stepLocation, Constant.ICON_INSTRUCTION, instruction);
                 } catch (JSONException e) {

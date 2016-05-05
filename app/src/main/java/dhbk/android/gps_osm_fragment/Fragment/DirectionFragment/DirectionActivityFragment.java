@@ -1,5 +1,6 @@
 package dhbk.android.gps_osm_fragment.Fragment.DirectionFragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,10 +17,14 @@ import android.widget.Toast;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
+import org.osmdroid.bonuspack.overlays.InfoWindow;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
@@ -109,8 +114,17 @@ public class DirectionActivityFragment extends BaseFragment {
 
         }
 
-        // TODO: 5/3/16 declareBottomNavigation
         declareBottomNavigation(savedInstanceState);
+
+        getActivity().findViewById(R.id.fab_my_location).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Location place = getLocation();
+                setStartPlace(place);
+                mStartPoint.setText(R.string.yourLocation);
+                drawNewPathOnTab();
+            }
+        });
     }
 
     // phong - khung chứa 4 icons phương tiện.
@@ -252,6 +266,55 @@ public class DirectionActivityFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Check that the result was from the autocomplete widget.
+        if (requestCode == REQUEST_CODE_AUTOCOMPLETE_EDITTEXT_1) {
+            if (resultCode == Activity.RESULT_OK) {
+                // Get the user's selected place from the Intent.
+                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                mStartPoint.setText(place.getName());
+                // set startPlace
+                Location startPlace = new Location("location");
+                startPlace.setLatitude(place.getLatLng().latitude);
+                startPlace.setLongitude(place.getLatLng().longitude);
+                setStartPlace(startPlace);
+
+                //drawpath
+                drawNewPathOnTab();
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // Indicates that the activity closed before a selection was made. For example if
+                // the user pressed the back button.
+            }
+        } else {
+            if (resultCode == Activity.RESULT_OK) {
+                // Get the user's selected place from the Intent.
+                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                mEndPoint.setText(place.getName());
+
+                // set dest
+                Location destPlace = new Location("location");
+                destPlace.setLatitude(place.getLatLng().latitude);
+                destPlace.setLongitude(place.getLatLng().longitude);
+                setDestinationPlace(destPlace);
+
+                // draw path
+                drawNewPathOnTab();
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // Indicates that the activity closed before a selection was made. For example if
+                // the user pressed the back button.
+            }
+        }
+    }
+
 
 //    @Override
 //    public void onAttach(Context context) {
@@ -298,6 +361,22 @@ public class DirectionActivityFragment extends BaseFragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Necessary to restore the BottomBar's state, otherwise we would
+        // lose the current tab on orientation change.
+        mBottomBar.onSaveInstanceState(outState);
+    }
+
+    // tap để đóng cửa sổ lại
+    @Override
+    public boolean singleTapConfirmedHelper(GeoPoint p) {
+        InfoWindow.closeAllInfoWindowsOn(mMapView);
+        return true;
     }
 
     public void setDestinationPlace(Location destinationPlace) {
