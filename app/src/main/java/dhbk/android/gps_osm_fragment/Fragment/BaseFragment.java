@@ -57,6 +57,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
     HashMap<String, String> map = new HashMap<String, String>();
     TextToSpeech t1;
     TextToSpeech t2;
+    private String language = Constant.LAN_VI;
 
     public MapView getMapView() {
         return mMapView;
@@ -77,7 +78,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         // add listen when tap the map.
         clearMap();
 
-        // TODO: 5/5/16  hiện thực speak
         map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
         t1 = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -156,7 +156,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
 
             final String instructionWhenClickMarker = instruction;
 
-            // TODO: 5/5/16 why click > 2, stringbuilder has double #<e>
 //             when click marker, speak instruction
             hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
                 @Override
@@ -202,15 +201,14 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
-    // phong - draw path with instruction on that path.
-    public void drawPathOSMWithInstruction(Location startPoint, Location destPoint, String travelMode, float width) {
-        String url = makeURL(startPoint.getLatitude(), startPoint.getLongitude(), destPoint.getLatitude(), destPoint.getLongitude(), travelMode);
+    public void drawPathOSMWithInstruction(Location startPoint, Location destPoint, String travelMode, float width, String language) {
+        this.language = language;
+        String url = makeURL(startPoint.getLatitude(), startPoint.getLongitude(), destPoint.getLatitude(), destPoint.getLongitude(), travelMode, language);
         new GetDirectionInstruction(startPoint, destPoint, url, width).execute();
     }
 
-    // phong - make a URL to Google to get direction.
     @NonNull
-    private String makeURL(double sourcelat, double sourcelog, double destlat, double destlog, String travelMode) {
+    private String makeURL(double sourcelat, double sourcelog, double destlat, double destlog, String travelMode, String language) {
         StringBuilder urlString = new StringBuilder();
         urlString.append("https://maps.googleapis.com/maps/api/directions/json");
         urlString.append("?origin=");// from
@@ -222,9 +220,8 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         urlString.append(",");
         urlString.append(Double.toString(destlog));
         urlString.append("&mode=" + travelMode);
-        urlString.append("&language=" + Constant.LANGUAGE);
+        urlString.append("&language=" + language);
         urlString.append("&key=" + Constant.GOOGLE_SERVER_KEY);
-
         Log.i("BaseFragment", "makeURL: " + urlString.toString());
         return urlString.toString();
     }
@@ -259,6 +256,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
+    // TODO: 5/5/16 fix this to add vietnam speak
     private class GetLanguageDetect2 extends AsyncTask<String, Void, StringBuffer> {
         @Override
         protected StringBuffer doInBackground(String... params) {
@@ -266,54 +264,59 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             String mCurrentLanguage = "en";
 
             StringBuffer instructionBuffer = new StringBuffer(params[0]);
-            instructionBuffer.insert(0, "<en>");
-            // retrieve each word from string
-            String[] arr = params[0].split(" ");
+            if (language.equals(Constant.LAN_EN)) {
+                instructionBuffer.insert(0, "<en>");
+                // retrieve each word from string
+                String[] arr = params[0].split(" ");
 
-            // connect to network to retrieve json for each word
-            for (String eachWord : arr) {
-                // gui len mang để lấy json về
-                final String FORECAST_BASE_URL =
-                        "http://ws.detectlanguage.com/0.2/detect?";
-                final String QUERY_PARAM = "q";
-                final String KEY_PARAM = "key";
-                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM, eachWord)
-                        .appendQueryParameter(KEY_PARAM, "acd8f06a54e981b3077bac8d3c4756c6")
-                        .build();
-                String s = getJSONFromUrl(builtUri.toString());
+                // connect to network to retrieve json for each word
+                for (String eachWord : arr) {
+                    // gui len mang để lấy json về
+                    final String FORECAST_BASE_URL =
+                            "http://ws.detectlanguage.com/0.2/detect?";
+                    final String QUERY_PARAM = "q";
+                    final String KEY_PARAM = "key";
+                    Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                            .appendQueryParameter(QUERY_PARAM, eachWord)
+                            .appendQueryParameter(KEY_PARAM, "acd8f06a54e981b3077bac8d3c4756c6")
+                            .build();
+                    String s = getJSONFromUrl(builtUri.toString());
 
-                try {
-                    final JSONObject json = new JSONObject(s);
-                    JSONObject data = json.getJSONObject("data");
-                    JSONArray detections = data.getJSONArray("detections");
-                    JSONObject detectionsBegin = detections.getJSONObject(0);
-                    mCurrentLanguage = detectionsBegin.getString("language");
-                    // nếu khác ngôn ngữ tiếng anh thì cho nó tiếng việt
-                    if (!mCurrentLanguage.equals("en")) {
-                        mCurrentLanguage = "vi";
-                    }
-
-                    // so sanh
-                    if (!mPreviousLanguage.equals(mCurrentLanguage)) {
-                        // lấy index chữ eachword trong buffer nha
-                        int indexWord = instructionBuffer.indexOf(eachWord);
-
-                        // chèn # + "vi"/"en" tùy previous
-                        if (mPreviousLanguage.equals("en")) {
-                            instructionBuffer.insert(indexWord, "#<vi>");
-                        } else {
-                            instructionBuffer.insert(indexWord, "#<en>");
+                    try {
+                        final JSONObject json = new JSONObject(s);
+                        JSONObject data = json.getJSONObject("data");
+                        JSONArray detections = data.getJSONArray("detections");
+                        JSONObject detectionsBegin = detections.getJSONObject(0);
+                        mCurrentLanguage = detectionsBegin.getString("language");
+                        // nếu khác ngôn ngữ tiếng anh thì cho nó tiếng việt
+                        if (!mCurrentLanguage.equals("en")) {
+                            mCurrentLanguage = "vi";
                         }
 
+                        // so sanh
+                        if (!mPreviousLanguage.equals(mCurrentLanguage)) {
+                            // lấy index chữ eachword trong buffer nha
+                            int indexWord = instructionBuffer.indexOf(eachWord);
+
+                            // chèn # + "vi"/"en" tùy previous
+                            if (mPreviousLanguage.equals("en")) {
+                                instructionBuffer.insert(indexWord, "#<vi>");
+                            } else {
+                                instructionBuffer.insert(indexWord, "#<en>");
+                            }
+
+                        }
+                        mPreviousLanguage = mCurrentLanguage;
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    mPreviousLanguage = mCurrentLanguage;
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-
+            } else {
+                instructionBuffer.insert(0, "<vi>");
             }
+
 
             return instructionBuffer;
         }
@@ -324,7 +327,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             // TODO: 5/5/16 speak vietname + english
             String stringFormat = instructionWithTag.toString();
             stringFormat = stringFormat.replaceAll("<en>", "<e>");
-            stringFormat = stringFormat.replaceAll("<vi>", "<v>u");
+            stringFormat = stringFormat.replaceAll("<vi>", "<v>");
 
             Log.i(TAG, "onPostExecute: " +stringFormat);
             String[] arr = stringFormat.split("#");

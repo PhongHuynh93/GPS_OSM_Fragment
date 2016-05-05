@@ -130,13 +130,13 @@ public class MainActivityFragment extends BaseFragment {
                 if (mPlace == null) {
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(null, 0, 0), "rageComicDetails")
+                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(null, 0, 0), Constant.DIRECTION_FRAGMENT)
                             .addToBackStack(null)
                             .commit();
                 } else {
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(mPlace.getName().toString(), mPlace.getLatLng().latitude, mPlace.getLatLng().longitude), "rageComicDetails")
+                            .replace(R.id.root_layout, DirectionActivityFragment.newInstance(mPlace.getName().toString(), mPlace.getLatLng().latitude, mPlace.getLatLng().longitude), Constant.DIRECTION_FRAGMENT)
                             .addToBackStack(null)
                             .commit();
                 }
