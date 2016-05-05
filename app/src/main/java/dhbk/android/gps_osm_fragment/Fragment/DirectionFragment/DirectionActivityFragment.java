@@ -31,8 +31,8 @@ import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
+// TODO: 5/5/16 remove bottom bar 
 public class DirectionActivityFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_DESTPLACE = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -41,7 +41,6 @@ public class DirectionActivityFragment extends BaseFragment {
     private static final String ARG_LATITUDE = "latitude";
     private static final String ARG_LONGITUDE = "longitude";
 
-    // TODO: Rename and change types of parameters
     private String mDesplaceName;
 //    private String mParam2;
 
@@ -60,7 +59,6 @@ public class DirectionActivityFragment extends BaseFragment {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static DirectionActivityFragment newInstance(String desPlace, double latitude, double longitude) {
         DirectionActivityFragment fragment = new DirectionActivityFragment();
         Bundle args = new Bundle();
@@ -315,29 +313,6 @@ public class DirectionActivityFragment extends BaseFragment {
         }
     }
 
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
-
-
     @Override
     public void onPause() {
         super.onPause();
@@ -372,12 +347,29 @@ public class DirectionActivityFragment extends BaseFragment {
         mBottomBar.onSaveInstanceState(outState);
     }
 
-    // tap để đóng cửa sổ lại
+//     tap để đóng cửa sổ lại
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
         InfoWindow.closeAllInfoWindowsOn(mMapView);
         return true;
     }
+
+//    @Override
+//    public boolean singleTapConfirmedHelper(GeoPoint p) {
+//        // xóa marker cửa số đang mở trên map
+//        InfoWindow.closeAllInfoWindowsOn(getMapView());
+//
+//        // hide navigation bar
+//        View decorView = getActivity().getWindow().getDecorView();
+//        // Hide both the navigation bar and the status bar.
+//        // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
+//        // a general rule, you should design your app to hide the status bar whenever you
+//        // hide the navigation bar.
+//        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+//        decorView.setSystemUiVisibility(uiOptions);
+//        return true;
+//    }
 
     public void setDestinationPlace(Location destinationPlace) {
         this.mDestinationPlace = destinationPlace;

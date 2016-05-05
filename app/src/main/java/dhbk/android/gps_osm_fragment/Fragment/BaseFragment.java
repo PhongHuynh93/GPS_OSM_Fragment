@@ -43,7 +43,6 @@ import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 import dhbk.android.gps_osm_fragment.Voice.AccentRemover;
-import dhbk.android.gps_osm_fragment.Voice.VIetnameseSpeak;
 
 /**
  * Created by huynhducthanhphong on 4/22/16.
@@ -126,16 +125,17 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
 //            Log.i(TAG, "setMarkerAtLocation: " + Html.toHtml(Html.fromHtml(title)));
             hereMarker.setTitle(instruction);
 
+            // TODO: 5/5/16 when click marker, speak
             // when click marker, speak instruction
-            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker, MapView mapView) {
-                    marker.showInfoWindow();
-                    mapView.getController().animateTo(marker.getPosition());
-                    new VIetnameseSpeak(getContext(), instructionKhongDau).speak();
-                    return true;
-                }
-            });
+//            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+//                @Override
+//                public boolean onMarkerClick(Marker marker, MapView mapView) {
+//                    marker.showInfoWindow();
+//                    mapView.getController().animateTo(marker.getPosition());
+//                    new VIetnameseSpeak(getContext(), instructionKhongDau).speak();
+//                    return true;
+//                }
+//            });
 
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();

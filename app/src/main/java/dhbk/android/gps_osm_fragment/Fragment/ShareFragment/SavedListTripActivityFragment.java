@@ -81,7 +81,6 @@ public class SavedListTripActivityFragment extends Fragment {
         int position = item.getItemId();
 
         if (position == 0) {
-            // TODO: 5/4/16
             //Show map
             String route = savedList.get(position).getRoute();
             getActivity().getSupportFragmentManager()

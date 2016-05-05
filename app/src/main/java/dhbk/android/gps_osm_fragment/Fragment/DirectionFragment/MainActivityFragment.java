@@ -78,7 +78,6 @@ public class MainActivityFragment extends BaseFragment {
 
         super.makeMapDefaultSetting();
 
-
         // receive address at a location.
         mResultReceiver = new AddressResultReceiver(new Handler());
 
@@ -132,11 +131,13 @@ public class MainActivityFragment extends BaseFragment {
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.root_layout, DirectionActivityFragment.newInstance(null, 0, 0), "rageComicDetails")
+                            .addToBackStack(null)
                             .commit();
                 } else {
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.root_layout, DirectionActivityFragment.newInstance(mPlace.getName().toString(), mPlace.getLatLng().latitude, mPlace.getLatLng().longitude), "rageComicDetails")
+                            .addToBackStack(null)
                             .commit();
                 }
             }
