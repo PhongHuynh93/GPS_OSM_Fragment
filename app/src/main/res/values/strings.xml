@@ -26,5 +26,7 @@
     <string name="yourLocation">Your location</string>
     <string name="track">Tracking</string>
     <string name="galery">Saved Trip</string>
+    <string name="english">English</string>
+    <string name="vietnam">Vietnamese</string>
 </resources>
 

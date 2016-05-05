@@ -4,7 +4,10 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -37,19 +40,24 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
-import dhbk.android.gps_osm_fragment.Voice.AccentRemover;
 
-/**
- * Created by huynhducthanhphong on 4/22/16.
- */
 public abstract class BaseFragment extends Fragment implements MapEventsReceiver {
+    private static final String TAG = "BaseFragment";
     private MapView mMapView;
     private IMapController mIMapController;
+
+    // text to speech
+    HashMap<String, String> map = new HashMap<String, String>();
+    TextToSpeech t1;
+    TextToSpeech t2;
+    private String language = Constant.LAN_VI;
 
     public MapView getMapView() {
         return mMapView;
@@ -69,6 +77,25 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         mIMapController.setCenter(startPoint);
         // add listen when tap the map.
         clearMap();
+
+        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
+        t1 = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    t1.setLanguage(Locale.UK);
+                }
+            }
+        }, "com.google.android.tts");
+        t2 = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+
+                }
+            }
+        }, "com.vnspeak.ttsengine.vitts");
+
     }
 
     // clear map, but add eventlocation
@@ -83,7 +110,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return null;
         }
-        return LocationServices.FusedLocationApi.getLastLocation(((MainActivity)getActivity()).getGoogleApiClient());
+        return LocationServices.FusedLocationApi.getLastLocation(((MainActivity) getActivity()).getGoogleApiClient());
     }
 
     //phong - add marker at a location
@@ -121,24 +148,26 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
                 instruction = instructionNeedRemove.substring(0, instructionNeedRemove.indexOf("\n\n"));
             }
 
-            final String instructionKhongDau = new AccentRemover().toUrlFriendly(instruction);
+//            final String instructionKhongDau = new AccentRemover().toUrlFriendly(instruction);
 //            Log.i(TAG, "setMarkerAtLocation: " + Html.toHtml(Html.fromHtml(title)));
             hereMarker.setTitle(instruction);
-
-            // TODO: 5/5/16 when click marker, speak
-            // when click marker, speak instruction
-//            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-//                @Override
-//                public boolean onMarkerClick(Marker marker, MapView mapView) {
-//                    marker.showInfoWindow();
-//                    mapView.getController().animateTo(marker.getPosition());
-//                    new VIetnameseSpeak(getContext(), instructionKhongDau).speak();
-//                    return true;
-//                }
-//            });
-
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();
+
+            final String instructionWhenClickMarker = instruction;
+
+//             when click marker, speak instruction
+            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker, MapView mapView) {
+                    marker.showInfoWindow();
+                    mapView.getController().animateTo(marker.getPosition());
+                    new GetLanguageDetect2().execute(instructionWhenClickMarker);
+                    return true;
+                }
+            });
+
+
         } else {
             Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
         }
@@ -172,15 +201,14 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
-    // phong - draw path with instruction on that path.
-    public void drawPathOSMWithInstruction(Location startPoint, Location destPoint, String travelMode, float width) {
-        String url = makeURL(startPoint.getLatitude(), startPoint.getLongitude(), destPoint.getLatitude(), destPoint.getLongitude(), travelMode);
+    public void drawPathOSMWithInstruction(Location startPoint, Location destPoint, String travelMode, float width, String language) {
+        this.language = language;
+        String url = makeURL(startPoint.getLatitude(), startPoint.getLongitude(), destPoint.getLatitude(), destPoint.getLongitude(), travelMode, language);
         new GetDirectionInstruction(startPoint, destPoint, url, width).execute();
     }
 
-    // phong - make a URL to Google to get direction.
     @NonNull
-    private String makeURL(double sourcelat, double sourcelog, double destlat, double destlog, String travelMode) {
+    private String makeURL(double sourcelat, double sourcelog, double destlat, double destlog, String travelMode, String language) {
         StringBuilder urlString = new StringBuilder();
         urlString.append("https://maps.googleapis.com/maps/api/directions/json");
         urlString.append("?origin=");// from
@@ -192,9 +220,8 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         urlString.append(",");
         urlString.append(Double.toString(destlog));
         urlString.append("&mode=" + travelMode);
-        urlString.append("&language=" + Constant.LANGUAGE);
+        urlString.append("&language=" + language);
         urlString.append("&key=" + Constant.GOOGLE_SERVER_KEY);
-
         Log.i("BaseFragment", "makeURL: " + urlString.toString());
         return urlString.toString();
     }
@@ -228,6 +255,93 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             }
         }
     }
+
+    // TODO: 5/5/16 fix this to add vietnam speak
+    private class GetLanguageDetect2 extends AsyncTask<String, Void, StringBuffer> {
+        @Override
+        protected StringBuffer doInBackground(String... params) {
+            String mPreviousLanguage = "en";
+            String mCurrentLanguage = "en";
+
+            StringBuffer instructionBuffer = new StringBuffer(params[0]);
+            if (language.equals(Constant.LAN_EN)) {
+                instructionBuffer.insert(0, "<en>");
+                // retrieve each word from string
+                String[] arr = params[0].split(" ");
+
+                // connect to network to retrieve json for each word
+                for (String eachWord : arr) {
+                    // gui len mang để lấy json về
+                    final String FORECAST_BASE_URL =
+                            "http://ws.detectlanguage.com/0.2/detect?";
+                    final String QUERY_PARAM = "q";
+                    final String KEY_PARAM = "key";
+                    Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                            .appendQueryParameter(QUERY_PARAM, eachWord)
+                            .appendQueryParameter(KEY_PARAM, "acd8f06a54e981b3077bac8d3c4756c6")
+                            .build();
+                    String s = getJSONFromUrl(builtUri.toString());
+
+                    try {
+                        final JSONObject json = new JSONObject(s);
+                        JSONObject data = json.getJSONObject("data");
+                        JSONArray detections = data.getJSONArray("detections");
+                        JSONObject detectionsBegin = detections.getJSONObject(0);
+                        mCurrentLanguage = detectionsBegin.getString("language");
+                        // nếu khác ngôn ngữ tiếng anh thì cho nó tiếng việt
+                        if (!mCurrentLanguage.equals("en")) {
+                            mCurrentLanguage = "vi";
+                        }
+
+                        // so sanh
+                        if (!mPreviousLanguage.equals(mCurrentLanguage)) {
+                            // lấy index chữ eachword trong buffer nha
+                            int indexWord = instructionBuffer.indexOf(eachWord);
+
+                            // chèn # + "vi"/"en" tùy previous
+                            if (mPreviousLanguage.equals("en")) {
+                                instructionBuffer.insert(indexWord, "#<vi>");
+                            } else {
+                                instructionBuffer.insert(indexWord, "#<en>");
+                            }
+
+                        }
+                        mPreviousLanguage = mCurrentLanguage;
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            } else {
+                instructionBuffer.insert(0, "<vi>");
+            }
+
+
+            return instructionBuffer;
+        }
+
+        @Override
+        protected void onPostExecute(StringBuffer instructionWithTag) {
+            super.onPostExecute(instructionWithTag);
+            // TODO: 5/5/16 speak vietname + english
+            String stringFormat = instructionWithTag.toString();
+            stringFormat = stringFormat.replaceAll("<en>", "<e>");
+            stringFormat = stringFormat.replaceAll("<vi>", "<v>");
+
+            Log.i(TAG, "onPostExecute: " +stringFormat);
+            String[] arr = stringFormat.split("#");
+            int i = 0;
+            if (arr[i].startsWith("<e>")) {
+                speakoutENG(arr, i);
+            }
+            if (arr[i].startsWith("<v>")) {
+                speakoutVN(arr, i);
+            }
+        }
+
+    }
+
 
     // phong - get JSON reponse from a URL
     @NonNull
@@ -413,6 +527,75 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
 
     private void centerMap(Location startPoint) {
         mMapView.getController().setCenter(new GeoPoint(startPoint.getLatitude(), startPoint.getLongitude()));
+    }
+
+    @Override
+    public void onDestroy() {
+        if (t1 != null) {
+            t1.stop();
+            t1.shutdown();
+        }
+        if (t2 != null) {
+            t2.stop();
+            t2.shutdown();
+        }
+        super.onDestroy();
+    }
+
+    //    speak
+    private void speakoutENG(final String[] text, final int i) {
+        t1.speak(text[i].replace("<e>", ""), TextToSpeech.QUEUE_FLUSH, map);
+        t1.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+                if (i + 1 < text.length) {
+                    if (text[i + 1].startsWith("<v>")) {
+                        speakoutVN(text, i + 1);
+                    }
+                    if (text[i + 1].startsWith("<e>")) {
+                        speakoutENG(text, i + 1);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
+            }
+        });
+    }
+
+    private void speakoutVN(final String[] text, final int i) {
+
+        t2.speak(text[i].replace("<v>", ""), TextToSpeech.QUEUE_FLUSH, map);
+        t2.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+                if (i + 1 < text.length) {
+                    if (text[i + 1].startsWith("<v>")) {
+                        speakoutVN(text, i + 1);
+                    }
+                    if (text[i + 1].startsWith("<e>")) {
+                        speakoutENG(text, i + 1);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
+            }
+        });
     }
 
 }
