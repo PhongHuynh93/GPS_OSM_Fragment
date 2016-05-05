@@ -137,6 +137,7 @@ public class ShareActivityFragment extends BaseFragment {
             }
         };
 
+        // TODO: 5/5/16 fix lại chỗ này, bị crash
         locationListenerGPS = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
