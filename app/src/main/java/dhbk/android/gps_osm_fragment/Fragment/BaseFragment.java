@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -42,14 +43,16 @@ import java.util.List;
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
-import dhbk.android.gps_osm_fragment.Voice.AccentRemover;
 
 /**
  * Created by huynhducthanhphong on 4/22/16.
  */
 public abstract class BaseFragment extends Fragment implements MapEventsReceiver {
+    private static final String TAG = "BaseFragment";
     private MapView mMapView;
     private IMapController mIMapController;
+    private String mPreviousLanguage = "en";
+    private String mCurrentLanguage = "en";
 
     public MapView getMapView() {
         return mMapView;
@@ -83,7 +86,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return null;
         }
-        return LocationServices.FusedLocationApi.getLastLocation(((MainActivity)getActivity()).getGoogleApiClient());
+        return LocationServices.FusedLocationApi.getLastLocation(((MainActivity) getActivity()).getGoogleApiClient());
     }
 
     //phong - add marker at a location
@@ -121,24 +124,47 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
                 instruction = instructionNeedRemove.substring(0, instructionNeedRemove.indexOf("\n\n"));
             }
 
-            final String instructionKhongDau = new AccentRemover().toUrlFriendly(instruction);
+//            final String instructionKhongDau = new AccentRemover().toUrlFriendly(instruction);
 //            Log.i(TAG, "setMarkerAtLocation: " + Html.toHtml(Html.fromHtml(title)));
             hereMarker.setTitle(instruction);
-
-            // TODO: 5/5/16 when click marker, speak
-            // when click marker, speak instruction
-//            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-//                @Override
-//                public boolean onMarkerClick(Marker marker, MapView mapView) {
-//                    marker.showInfoWindow();
-//                    mapView.getController().animateTo(marker.getPosition());
-//                    new VIetnameseSpeak(getContext(), instructionKhongDau).speak();
-//                    return true;
-//                }
-//            });
-
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();
+
+            final String instructionWhenClickMarker = instruction;
+
+            // TODO: 5/5/16 when click marker, mới phân tích + speak
+//             when click marker, speak instruction
+            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker, MapView mapView) {
+                    marker.showInfoWindow();
+                    mapView.getController().animateTo(marker.getPosition());
+//                    new VIetnameseSpeak(getContext(), instructionKhongDau).speak();
+
+                    // TODO: 5/5/16 bưng quyên cái for vào asynctask
+
+                    // chứa chuôi string đã được thêm tag
+                    StringBuffer instructionBuffer = new StringBuffer(instructionWhenClickMarker);
+                    instructionBuffer.insert(0, "<en>");
+                    // retrieve each word from string
+                    String[] arr = instructionWhenClickMarker.split(" ");
+                    for (String eachWord : arr) {
+                        // gui len mang để lấy json về
+                        final String FORECAST_BASE_URL =
+                                "http://ws.detectlanguage.com/0.2/detect?";
+                        final String QUERY_PARAM = "q";
+                        final String KEY_PARAM = "key";
+                        Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                                .appendQueryParameter(QUERY_PARAM, eachWord)
+                                .appendQueryParameter(KEY_PARAM, "acd8f06a54e981b3077bac8d3c4756c6")
+                                .build();
+                        new GetLanguageDetect(instructionBuffer, eachWord).execute(builtUri.toString());
+                    }
+                    return true;
+                }
+            });
+
+
         } else {
             Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
         }
@@ -229,6 +255,56 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
+    private class GetLanguageDetect extends AsyncTask<String, Void, String> {
+
+        private StringBuffer instructionBuffer;
+        private String eachWord;
+
+        public GetLanguageDetect(StringBuffer instructionBuffer, String eachWord) {
+            this.instructionBuffer = instructionBuffer;
+            this.eachWord = eachWord;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String url = params[0];
+            return getJSONFromUrl(url);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            try {
+                final JSONObject json = new JSONObject(s);
+                JSONObject data = json.getJSONObject("data");
+                JSONArray detections = data.getJSONArray("detections");
+                JSONObject detectionsBegin = detections.getJSONObject(0);
+                mCurrentLanguage = detectionsBegin.getString("language");
+                // nếu khác ngôn ngữ tiếng anh thì cho nó tiếng việt
+                if (!mCurrentLanguage.equals("en")) {
+                    mCurrentLanguage = "vi";
+                }
+
+                // so sanh
+                if (!mPreviousLanguage.equals(mCurrentLanguage)) {
+                    // lấy index chữ eachword trong buffer nha
+                    int indexWord = instructionBuffer.indexOf(eachWord);
+
+                    // chèn # + "vi"/"en" tùy previous
+                    if (mPreviousLanguage.equals("en")) {
+                        instructionBuffer.insert(indexWord, "#<vi>");
+                    } else {
+                        instructionBuffer.insert(indexWord, "#<en>");
+                    }
+
+                }
+                mPreviousLanguage = mCurrentLanguage;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     // phong - get JSON reponse from a URL
     @NonNull
     private String getJSONFromUrl(String url) {

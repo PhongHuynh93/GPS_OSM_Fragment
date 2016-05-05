@@ -44,7 +44,7 @@ public class DirectionActivityFragment extends BaseFragment {
     private String mDesplaceName;
 //    private String mParam2;
 
-//    private OnFragmentInteractionListener mListener;
+    //    private OnFragmentInteractionListener mListener;
     private Toolbar mToolbar;
     private MapView mMapView;
     private EditText mStartPoint;
@@ -123,6 +123,9 @@ public class DirectionActivityFragment extends BaseFragment {
                 drawNewPathOnTab();
             }
         });
+
+
+
     }
 
     // phong - khung chứa 4 icons phương tiện.
@@ -347,7 +350,7 @@ public class DirectionActivityFragment extends BaseFragment {
         mBottomBar.onSaveInstanceState(outState);
     }
 
-//     tap để đóng cửa sổ lại
+    //     tap để đóng cửa sổ lại
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
         InfoWindow.closeAllInfoWindowsOn(mMapView);
