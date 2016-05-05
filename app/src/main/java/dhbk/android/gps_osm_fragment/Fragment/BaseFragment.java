@@ -321,10 +321,13 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         @Override
         protected void onPostExecute(StringBuffer instructionWithTag) {
             super.onPostExecute(instructionWithTag);
-            Log.i(TAG, "onPostExecute: " + instructionWithTag.toString());
             // TODO: 5/5/16 speak vietname + english
-            String[] arr = instructionWithTag.toString().split("#");
-            Log.e("12345", String.valueOf(arr.length));
+            String stringFormat = instructionWithTag.toString();
+            stringFormat = stringFormat.replaceAll("<en>", "<e>");
+            stringFormat = stringFormat.replaceAll("<vi>", "<v>u");
+
+            Log.i(TAG, "onPostExecute: " +stringFormat);
+            String[] arr = stringFormat.split("#");
             int i = 0;
             if (arr[i].startsWith("<e>")) {
                 speakoutENG(arr, i);
@@ -333,7 +336,9 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
                 speakoutVN(arr, i);
             }
         }
+
     }
+
 
     // phong - get JSON reponse from a URL
     @NonNull
