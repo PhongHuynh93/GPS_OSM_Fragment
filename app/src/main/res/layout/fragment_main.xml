@@ -5,21 +5,6 @@
     android:id="@+id/map_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!--search-->
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginLeft="@dimen/searchbar_marginleft"
-        android:layout_marginRight="@dimen/searchbar_marginleft"
-        android:layout_marginTop="@dimen/searchbar_margintop">
-
-        <fragment
-            android:id="@+id/autocomplete_fragment"
-            android:name="com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </android.support.v7.widget.CardView>
 
     <!--map-->
     <org.osmdroid.views.MapView
@@ -27,6 +12,58 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <!--toolbar-->
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                app:cardBackgroundColor="@color/colorAccent">
+
+                <EditText
+                    android:id="@+id/search_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/start_point"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimaryDark"/>
+
+            </android.support.v7.widget.CardView>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+    <!--&lt;!&ndash;search&ndash;&gt;-->
+    <!--<android.support.v7.widget.CardView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="top|center_horizontal"-->
+    <!--android:layout_marginLeft="@dimen/searchbar_marginleft"-->
+    <!--android:layout_marginRight="@dimen/searchbar_marginleft"-->
+    <!--android:layout_marginTop="@dimen/searchbar_margintop">-->
+
+    <!--<fragment-->
+    <!--android:id="@+id/autocomplete_fragment"-->
+    <!--android:name="com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"/>-->
+    <!--</android.support.v7.widget.CardView>-->
+
+
 
     <!--bottom sheets:  -->
     <FrameLayout

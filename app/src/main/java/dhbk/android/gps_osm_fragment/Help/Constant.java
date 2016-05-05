@@ -21,7 +21,8 @@ public class Constant {
     // draw on map
     public static final Float WIDTH_LINE = 20.0f;
     public static final int COLOR = 0x8003A9F4;
-    public static final String LANGUAGE = "vi";
+//    public static final String LANGUAGE = "vi";
+    public static final String LANGUAGE = "en";
     public static final int ICON_INSTRUCTION = R.drawable.ic_place_black_24dp;
     public static final int MARKER = R.drawable.ic_add_location_black_36dp;
     public static final int ZOOM = 14;

@@ -1,6 +1,7 @@
 package dhbk.android.gps_osm_fragment.Fragment.DirectionFragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,12 +17,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import org.osmdroid.bonuspack.overlays.InfoWindow;
 import org.osmdroid.util.GeoPoint;
@@ -37,6 +41,7 @@ import dhbk.android.gps_osm_fragment.R;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends BaseFragment {
+    private static final int REQUEST_CODE_AUTOCOMPLETE_EDITTEXT_1 = 1;
     public static final String TAG = "MainActivityFragment";
     private AddressResultReceiver mResultReceiver;
     private Place mPlace;
@@ -77,26 +82,28 @@ public class MainActivityFragment extends BaseFragment {
         mResultReceiver = new AddressResultReceiver(new Handler());
 
 
-        final SupportPlaceAutocompleteFragment autocompleteFragment = (SupportPlaceAutocompleteFragment)
-                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                mPlace = place;
-                ((BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets)).addPlaceToBottomSheet(place);
-                // remove marker on the map, center at that point and add marker.
-                clearMap();
-                Location placeLocation = new Location("Test");
-                placeLocation.setLatitude(place.getLatLng().latitude);
-                placeLocation.setLongitude(place.getLatLng().longitude);
-                setMarkerAtLocation(placeLocation, Constant.MARKER);
-            }
+//        final SupportPlaceAutocompleteFragment autocompleteFragment = (SupportPlaceAutocompleteFragment)
+//                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                mPlace = place;
+//                ((BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets)).addPlaceToBottomSheet(place);
+//                // remove marker on the map, center at that point and add marker.
+//                clearMap();
+//                Location placeLocation = new Location("Test");
+//                placeLocation.setLatitude(place.getLatLng().latitude);
+//                placeLocation.setLongitude(place.getLatLng().longitude);
+//                setMarkerAtLocation(placeLocation, Constant.MARKER);
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//
+//            }
+//        });
 
-            @Override
-            public void onError(Status status) {
-
-            }
-        });
+        declareSearch();
 
         final FloatingActionButton floatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab_my_location);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -120,21 +127,27 @@ public class MainActivityFragment extends BaseFragment {
         floatingActionButtonDirection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: 5/3/16 go to another fragment
                 if (mPlace == null) {
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.root_layout, DirectionActivityFragment.newInstance(null, 0, 0), "rageComicDetails")
+                            .addToBackStack(null)
                             .commit();
                 } else {
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.root_layout, DirectionActivityFragment.newInstance(mPlace.getName().toString(), mPlace.getLatLng().latitude, mPlace.getLatLng().longitude), "rageComicDetails")
+                            .addToBackStack(null)
                             .commit();
                 }
             }
         });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -164,7 +177,18 @@ public class MainActivityFragment extends BaseFragment {
 
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
+        // xóa marker cửa số đang mở trên map
         InfoWindow.closeAllInfoWindowsOn(getMapView());
+
+        // hide navigation bar
+        View decorView = getActivity().getWindow().getDecorView();
+        // Hide both the navigation bar and the status bar.
+        // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
+        // a general rule, you should design your app to hide the status bar whenever you
+        // hide the navigation bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
         return true;
     }
 
@@ -185,7 +209,7 @@ public class MainActivityFragment extends BaseFragment {
     }
 
     protected void startIntentService(Location touchLocation) {
-        if (((MainActivity)getActivity()).getGoogleApiClient().isConnected()) {
+        if (((MainActivity) getActivity()).getGoogleApiClient().isConnected()) {
             // Create an intent for passing to the intent service responsible for fetching the address.
             Intent intent = new Intent(getContext(), FetchAddressIntentService.class);
 
@@ -211,7 +235,7 @@ public class MainActivityFragment extends BaseFragment {
         }
 
         /**
-         *  Receives data sent from FetchAddressIntentService
+         * Receives data sent from FetchAddressIntentService
          */
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
@@ -241,4 +265,74 @@ public class MainActivityFragment extends BaseFragment {
     }
 
 
+    //    search bar
+// khai bao listen cho thanh edittext, set text cho destination edittext
+    private void declareSearch() {
+        EditText searchBar = (EditText) getActivity().findViewById(R.id.search_bar);
+        searchBar.setText(R.string.yourLocation);
+        searchBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // call search activity
+                openAutocompleteActivity(REQUEST_CODE_AUTOCOMPLETE_EDITTEXT_1);
+            }
+        });
+
+    }
+
+    private void openAutocompleteActivity(int code) {
+        try {
+            // The autocomplete activity requires Google Play Services to be available. The intent
+            // builder checks this and throws an exception if it is not the case.
+            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                    .build(getActivity());
+            startActivityForResult(intent, code);
+        } catch (GooglePlayServicesRepairableException e) {
+            // Indicates that Google Play Services is either not installed or not up to date. Prompt
+            // the user to correct the issue.
+            GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), e.getConnectionStatusCode(),
+                    0 /* requestCode */).show();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // Indicates that Google Play Services is not available and the problem is not easily
+            // resolvable.
+            String message = "Google Play Services is not available: " +
+                    GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Check that the result was from the autocomplete widget.
+        if (requestCode == REQUEST_CODE_AUTOCOMPLETE_EDITTEXT_1) {
+            if (resultCode == Activity.RESULT_OK) {
+                // Get the user's selected place from the Intent.
+                 mPlace = PlaceAutocomplete.getPlace(getContext(), data);
+                ((EditText) getActivity().findViewById(R.id.search_bar)).setText(mPlace.getName());
+//                // set startPlace
+//                Location startPlace = new Location("location");
+//                startPlace.setLatitude(mPlace.getLatLng().latitude);
+//                startPlace.setLongitude(mPlace.getLatLng().longitude);
+//                setStartPlace(startPlace);
+
+
+                ((BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets)).addPlaceToBottomSheet(mPlace);
+//                // remove marker on the map, center at that point and add marker.
+                clearMap();
+                Location placeLocation = new Location("Test");
+                placeLocation.setLatitude(mPlace.getLatLng().latitude);
+                placeLocation.setLongitude(mPlace.getLatLng().longitude);
+                setMarkerAtLocation(placeLocation, Constant.MARKER);
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // Indicates that the activity closed before a selection was made. For example if
+                // the user pressed the back button.
+            }
+
+        }
+    }
 }

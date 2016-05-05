@@ -1,5 +1,6 @@
 package dhbk.android.gps_osm_fragment.Fragment.DirectionFragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,18 +17,22 @@ import android.widget.Toast;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
+import org.osmdroid.bonuspack.overlays.InfoWindow;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
+// TODO: 5/5/16 remove bottom bar 
 public class DirectionActivityFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_DESTPLACE = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -36,7 +41,6 @@ public class DirectionActivityFragment extends BaseFragment {
     private static final String ARG_LATITUDE = "latitude";
     private static final String ARG_LONGITUDE = "longitude";
 
-    // TODO: Rename and change types of parameters
     private String mDesplaceName;
 //    private String mParam2;
 
@@ -55,7 +59,6 @@ public class DirectionActivityFragment extends BaseFragment {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static DirectionActivityFragment newInstance(String desPlace, double latitude, double longitude) {
         DirectionActivityFragment fragment = new DirectionActivityFragment();
         Bundle args = new Bundle();
@@ -109,8 +112,17 @@ public class DirectionActivityFragment extends BaseFragment {
 
         }
 
-        // TODO: 5/3/16 declareBottomNavigation
         declareBottomNavigation(savedInstanceState);
+
+        getActivity().findViewById(R.id.fab_my_location).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Location place = getLocation();
+                setStartPlace(place);
+                mStartPoint.setText(R.string.yourLocation);
+                drawNewPathOnTab();
+            }
+        });
     }
 
     // phong - khung chứa 4 icons phương tiện.
@@ -252,28 +264,54 @@ public class DirectionActivityFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
+        // Check that the result was from the autocomplete widget.
+        if (requestCode == REQUEST_CODE_AUTOCOMPLETE_EDITTEXT_1) {
+            if (resultCode == Activity.RESULT_OK) {
+                // Get the user's selected place from the Intent.
+                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                mStartPoint.setText(place.getName());
+                // set startPlace
+                Location startPlace = new Location("location");
+                startPlace.setLatitude(place.getLatLng().latitude);
+                startPlace.setLongitude(place.getLatLng().longitude);
+                setStartPlace(startPlace);
 
+                //drawpath
+                drawNewPathOnTab();
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // Indicates that the activity closed before a selection was made. For example if
+                // the user pressed the back button.
+            }
+        } else {
+            if (resultCode == Activity.RESULT_OK) {
+                // Get the user's selected place from the Intent.
+                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                mEndPoint.setText(place.getName());
+
+                // set dest
+                Location destPlace = new Location("location");
+                destPlace.setLatitude(place.getLatLng().latitude);
+                destPlace.setLongitude(place.getLatLng().longitude);
+                setDestinationPlace(destPlace);
+
+                // draw path
+                drawNewPathOnTab();
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // Indicates that the activity closed before a selection was made. For example if
+                // the user pressed the back button.
+            }
+        }
+    }
 
     @Override
     public void onPause() {
@@ -299,6 +337,39 @@ public class DirectionActivityFragment extends BaseFragment {
     public void onDetach() {
         super.onDetach();
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Necessary to restore the BottomBar's state, otherwise we would
+        // lose the current tab on orientation change.
+        mBottomBar.onSaveInstanceState(outState);
+    }
+
+//     tap để đóng cửa sổ lại
+    @Override
+    public boolean singleTapConfirmedHelper(GeoPoint p) {
+        InfoWindow.closeAllInfoWindowsOn(mMapView);
+        return true;
+    }
+
+//    @Override
+//    public boolean singleTapConfirmedHelper(GeoPoint p) {
+//        // xóa marker cửa số đang mở trên map
+//        InfoWindow.closeAllInfoWindowsOn(getMapView());
+//
+//        // hide navigation bar
+//        View decorView = getActivity().getWindow().getDecorView();
+//        // Hide both the navigation bar and the status bar.
+//        // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
+//        // a general rule, you should design your app to hide the status bar whenever you
+//        // hide the navigation bar.
+//        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+//        decorView.setSystemUiVisibility(uiOptions);
+//        return true;
+//    }
 
     public void setDestinationPlace(Location destinationPlace) {
         this.mDestinationPlace = destinationPlace;
