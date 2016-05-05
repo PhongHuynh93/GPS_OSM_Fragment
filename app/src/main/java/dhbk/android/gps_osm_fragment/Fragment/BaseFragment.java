@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -38,21 +40,23 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
-/**
- * Created by huynhducthanhphong on 4/22/16.
- */
 public abstract class BaseFragment extends Fragment implements MapEventsReceiver {
     private static final String TAG = "BaseFragment";
     private MapView mMapView;
     private IMapController mIMapController;
-    private String mPreviousLanguage = "en";
-    private String mCurrentLanguage = "en";
+
+    // text to speech
+    HashMap<String, String> map = new HashMap<String, String>();
+    TextToSpeech t1;
+    TextToSpeech t2;
 
     public MapView getMapView() {
         return mMapView;
@@ -72,6 +76,26 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         mIMapController.setCenter(startPoint);
         // add listen when tap the map.
         clearMap();
+
+        // TODO: 5/5/16  hiện thực speak
+        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
+        t1 = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    t1.setLanguage(Locale.UK);
+                }
+            }
+        }, "com.google.android.tts");
+        t2 = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+
+                }
+            }
+        }, "com.vnspeak.ttsengine.vitts");
+
     }
 
     // clear map, but add eventlocation
@@ -132,6 +156,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
 
             final String instructionWhenClickMarker = instruction;
 
+            // TODO: 5/5/16 why click > 2, stringbuilder has double #<e>
 //             when click marker, speak instruction
             hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
                 @Override
@@ -237,6 +262,9 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
     private class GetLanguageDetect2 extends AsyncTask<String, Void, StringBuffer> {
         @Override
         protected StringBuffer doInBackground(String... params) {
+            String mPreviousLanguage = "en";
+            String mCurrentLanguage = "en";
+
             StringBuffer instructionBuffer = new StringBuffer(params[0]);
             instructionBuffer.insert(0, "<en>");
             // retrieve each word from string
@@ -294,7 +322,16 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         protected void onPostExecute(StringBuffer instructionWithTag) {
             super.onPostExecute(instructionWithTag);
             Log.i(TAG, "onPostExecute: " + instructionWithTag.toString());
-            // TODO: 5/5/16 speak vietname + english 
+            // TODO: 5/5/16 speak vietname + english
+            String[] arr = instructionWithTag.toString().split("#");
+            Log.e("12345", String.valueOf(arr.length));
+            int i = 0;
+            if (arr[i].startsWith("<e>")) {
+                speakoutENG(arr, i);
+            }
+            if (arr[i].startsWith("<v>")) {
+                speakoutVN(arr, i);
+            }
         }
     }
 
@@ -482,6 +519,75 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
 
     private void centerMap(Location startPoint) {
         mMapView.getController().setCenter(new GeoPoint(startPoint.getLatitude(), startPoint.getLongitude()));
+    }
+
+    @Override
+    public void onDestroy() {
+        if (t1 != null) {
+            t1.stop();
+            t1.shutdown();
+        }
+        if (t2 != null) {
+            t2.stop();
+            t2.shutdown();
+        }
+        super.onDestroy();
+    }
+
+    //    speak
+    private void speakoutENG(final String[] text, final int i) {
+        t1.speak(text[i].replace("<e>", ""), TextToSpeech.QUEUE_FLUSH, map);
+        t1.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+                if (i + 1 < text.length) {
+                    if (text[i + 1].startsWith("<v>")) {
+                        speakoutVN(text, i + 1);
+                    }
+                    if (text[i + 1].startsWith("<e>")) {
+                        speakoutENG(text, i + 1);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
+            }
+        });
+    }
+
+    private void speakoutVN(final String[] text, final int i) {
+
+        t2.speak(text[i].replace("<v>", ""), TextToSpeech.QUEUE_FLUSH, map);
+        t2.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+                if (i + 1 < text.length) {
+                    if (text[i + 1].startsWith("<v>")) {
+                        speakoutVN(text, i + 1);
+                    }
+                    if (text[i + 1].startsWith("<e>")) {
+                        speakoutENG(text, i + 1);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
+            }
+        });
     }
 
 }
