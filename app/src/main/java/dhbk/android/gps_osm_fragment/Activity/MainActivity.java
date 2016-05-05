@@ -17,14 +17,16 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 
 import dhbk.android.gps_osm_fragment.Fragment.ChatFragment.ChatActivityFragment;
+import dhbk.android.gps_osm_fragment.Fragment.DirectionFragment.DirectionActivityFragment;
 import dhbk.android.gps_osm_fragment.Fragment.DirectionFragment.MainActivityFragment;
 import dhbk.android.gps_osm_fragment.Fragment.ShareFragment.SavedListTripActivityFragment;
 import dhbk.android.gps_osm_fragment.Fragment.ShareFragment.ShareActivityFragment;
 import dhbk.android.gps_osm_fragment.Help.Config;
+import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, DirectionActivityFragment.DirectionInterface {
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -73,6 +75,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             .beginTransaction()
                             .replace(R.id.root_layout, SavedListTripActivityFragment.newInstance())
                             .commit();
+                } else if (id == R.id.speak_en) {
+                    navChooseLanguage(Constant.LAN_EN);
+//                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//                    getSupportFragmentManager()
+//                            .beginTransaction()
+//                            .replace(R.id.root_layout, SavedListTripActivityFragment.newInstance())
+//                            .commit();
+                } else if (id == R.id.speak_vi) {
+                    navChooseLanguage(Constant.LAN_VI);
+//                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//                    getSupportFragmentManager()
+//                            .beginTransaction()
+//                            .replace(R.id.root_layout, SavedListTripActivityFragment.newInstance())
+//                            .commit();
                 }
                 DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -130,4 +146,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return mGoogleApiClient;
     }
 
+    // khi ta chọn language trong navigation drawer thì gọi hàm này
+    @Override
+    public void navChooseLanguage(String language) {
+        // neu fragment đang mở là fragment
+        DirectionActivityFragment myFragment = (DirectionActivityFragment) getSupportFragmentManager().findFragmentByTag(Constant.DIRECTION_FRAGMENT);
+        if (myFragment != null && myFragment.isVisible()) {
+            // add your code here
+            myFragment.setLanguage(language);
+        }
+    }
 }

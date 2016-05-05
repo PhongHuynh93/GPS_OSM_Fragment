@@ -1,6 +1,7 @@
 package dhbk.android.gps_osm_fragment.Fragment.DirectionFragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -54,6 +55,13 @@ public class DirectionActivityFragment extends BaseFragment {
     private double mLongitudeDesplace;
     private Location mStartPlace;
     private Location mDestinationPlace;
+    private DirectionInterface mListener;
+
+    private String language = Constant.LAN_EN;
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 
     public DirectionActivityFragment() {
         // Required empty public constructor
@@ -216,7 +224,7 @@ public class DirectionActivityFragment extends BaseFragment {
     private void drawNewPath(String mode) {
         if (mStartPlace != null && mDestinationPlace != null) {
             mMapView.getOverlays().clear();
-            drawPathOSMWithInstruction(mStartPlace, mDestinationPlace, mode, Constant.WIDTH_LINE);
+            drawPathOSMWithInstruction(mStartPlace, mDestinationPlace, mode, Constant.WIDTH_LINE, language);
         }
     }
 
@@ -316,6 +324,26 @@ public class DirectionActivityFragment extends BaseFragment {
         }
     }
 
+    // tạo interface và gỡ interface(nếu là listen thì gỡ ra)
+    public interface DirectionInterface {
+        void navChooseLanguage(String language);
+    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof DirectionInterface) {
+            mListener = (DirectionInterface) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement OnRageComicSelected.");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -336,10 +364,6 @@ public class DirectionActivityFragment extends BaseFragment {
         super.onDestroyView();
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -381,4 +405,8 @@ public class DirectionActivityFragment extends BaseFragment {
     public void setStartPlace(Location startPlace) {
         this.mStartPlace = startPlace;
     }
+
+
+    // TODO: 5/5/16 make interface
+
 }

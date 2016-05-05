@@ -38,4 +38,9 @@ public class Constant {
     //
     public static final String EXTRA_PROFILE_URL = "profile url";
     public static final String EXTRA_SHARED_PREF = "shared pref";
+
+    // fragment
+    public static final String DIRECTION_FRAGMENT = "direction_fragment";
+    public static final String LAN_EN = "en";
+    public static final String LAN_VI = "vi";
 }
