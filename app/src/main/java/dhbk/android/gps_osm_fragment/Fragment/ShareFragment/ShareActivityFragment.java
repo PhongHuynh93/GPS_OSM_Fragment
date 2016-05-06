@@ -15,14 +15,13 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.bonuspack.overlays.Polyline;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
@@ -40,22 +39,7 @@ import java.util.Date;
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ShareActivityFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ShareActivityFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-
     private static final int ACTIVITY_CAMERA_APP = 0;
     // private static final String GALLERY_LOCATION = "tripGallery" + new SimpleDateFormat("ydM_Hms").format(new Date()); // name of the folder gallery
     private static final String GALLERY_LOCATION = "tripGallery";
@@ -65,7 +49,6 @@ public class ShareActivityFragment extends BaseFragment {
     Marker mStart, mEnd;
     MapView mMap;
     LocationListener locationListenerGPS, locationListenerNetWork;
-    private IMapController mapController;
     private ImageView img;
 
     private String imageFileLocation = "";
@@ -78,15 +61,9 @@ public class ShareActivityFragment extends BaseFragment {
 
     public static ShareActivityFragment newInstance() {
         ShareActivityFragment fragment = new ShareActivityFragment();
-
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -98,18 +75,23 @@ public class ShareActivityFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         createImageGallery(); //create gallery when onCreate
+
+        // make map
         makeMapDefaultSetting();
         mMap = getMapView();
-        mapController = getIMapController();
-        mapController.setZoom(18);
-        route = new ArrayList<GeoPoint>();
+
+        route = new ArrayList<>();
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        // TODO: 5/6/16 change start icon
         mStart = new Marker(mMap);
-        Drawable startIcon = getResources().getDrawable(R.drawable.start);
+        Drawable startIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_place_green_24dp);
         mStart.setIcon(startIcon);
+
+        // TODO: 5/6/16 chagne end icon
+        Drawable end = ContextCompat.getDrawable(getContext(), R.drawable.ic_place_blue_24dp);
         mEnd = new Marker(mMap);
-        Drawable end = getResources().getDrawable(R.drawable.end);
         mEnd.setIcon(end);
 
 
@@ -118,7 +100,7 @@ public class ShareActivityFragment extends BaseFragment {
             public void onLocationChanged(Location location) {
                 GeoPoint temp = new GeoPoint(location.getLatitude(), location.getLongitude(), 16);
                 // Toast.makeText(getBaseContext(), String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT).show();
-                mapController.setCenter(temp);
+                mMap.getController().setCenter(temp);
             }
 
             @Override
@@ -212,14 +194,6 @@ public class ShareActivityFragment extends BaseFragment {
                 } else {
                     if (route.size() > 2) {
                         locationManager.removeUpdates(locationListenerGPS);
-//                        Gson gson = new Gson();
-//                        String routeJSON = gson.toJson(route);
-//                        Bundle bundle = new Bundle();
-//                        bundle.putString("routeJSON", routeJSON);
-//                        Intent intent = new Intent(this, SaveRouteActivity.class);
-//                        intent.putExtras(bundle);
-//                        startActivity(intent);
-                        // TODO: 5/4/16 make fragment, copy bundle
                         getActivity().getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.root_layout, SaveRouteActivityFragment.newInstance(route))

@@ -4,7 +4,6 @@
              android:layout_height="match_parent"
              tools:context="dhbk.android.gps_osm_fragment.Fragment.ShareFragment.EditTripInfoActivity">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

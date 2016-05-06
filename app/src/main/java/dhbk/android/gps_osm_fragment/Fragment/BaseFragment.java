@@ -256,7 +256,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
-    // TODO: 5/5/16 fix this to add vietnam speak
     private class GetLanguageDetect2 extends AsyncTask<String, Void, StringBuffer> {
         @Override
         protected StringBuffer doInBackground(String... params) {

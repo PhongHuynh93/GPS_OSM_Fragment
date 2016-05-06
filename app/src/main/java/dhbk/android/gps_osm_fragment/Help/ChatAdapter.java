@@ -11,7 +11,6 @@ import java.util.List;
 
 import dhbk.android.gps_osm_fragment.R;
 
-// TODO: 4/25/16 thay bằng layout có 9-patch image
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     private static final int MESSAGE_SENT = 1;

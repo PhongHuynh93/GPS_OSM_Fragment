@@ -26,7 +26,6 @@ import dhbk.android.gps_osm_fragment.Help.Config;
 import dhbk.android.gps_osm_fragment.R;
 
 
-// TODO: 4/25/16 check layout xem chạy được ko
 public class PublicChatActivityFragment extends Fragment {
     private static final String ARG_NICK = "nick";
 

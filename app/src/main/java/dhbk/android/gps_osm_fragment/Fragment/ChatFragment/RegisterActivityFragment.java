@@ -88,7 +88,6 @@ public class RegisterActivityFragment extends BaseFragment {
                         @Override
                         // dk thành công
                         public void onSuccess(Map<String, Object> result) {
-                            // TODO: 5/1/16 up email to firebase
                             Map<String, Object> nickMap = new HashMap<>();
                             // put nick, email to nickList
                             nickMap.put("nick", nickEdt.getText().toString());

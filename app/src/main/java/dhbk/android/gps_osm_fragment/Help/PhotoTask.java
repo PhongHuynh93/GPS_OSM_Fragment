@@ -54,7 +54,6 @@ public abstract class PhotoTask extends AsyncTask<PhotoTask.MyTaskParams, Void, 
      */
     @Override
     protected ArrayList<AttributedPhoto> doInBackground(MyTaskParams... params) {
-        // TODO: 4/24/16 make a progress dialog
         if (params.length != 1) {
             return null;
         }
