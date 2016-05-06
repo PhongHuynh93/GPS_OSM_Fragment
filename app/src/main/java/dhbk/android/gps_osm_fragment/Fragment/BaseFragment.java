@@ -256,6 +256,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
+    //    xac định xem ngôn ngữ mình upload lên là english hay vietnam
     private class GetLanguageDetect2 extends AsyncTask<String, Void, StringBuffer> {
         @Override
         protected StringBuffer doInBackground(String... params) {
@@ -328,7 +329,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             stringFormat = stringFormat.replaceAll("<en>", "<e>");
             stringFormat = stringFormat.replaceAll("<vi>", "<v>");
 
-            Log.i(TAG, "onPostExecute: " +stringFormat);
+            Log.i(TAG, "onPostExecute: " + stringFormat);
             String[] arr = stringFormat.split("#");
             int i = 0;
             if (arr[i].startsWith("<e>")) {
@@ -597,4 +598,27 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         });
     }
 
+
+    // draw path depends on arrayList of GeoPoint
+    public void drawPathDependGeoPoint(ArrayList<GeoPoint> waypoints) {
+        Road road = new Road(waypoints);
+        final ArrayList<GeoPoint> list = road.mRouteHigh;
+
+        final PathOverlay myPath = new PathOverlay(Constant.COLOR, getContext());
+        Paint paint = myPath.getPaint();
+        paint.setStrokeWidth(Constant.WIDTH_LINE);
+        paint.setAlpha(150);
+        paint.setDither(true);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        myPath.setPaint(paint);
+
+        // draw path
+        for (int i = 1; i < list.size(); i++) {
+            GeoPoint g = new GeoPoint(list.get(i).getLatitude(), list.get(i).getLongitude());
+            myPath.addPoint(g);
+        }
+
+        mMapView.getOverlays().add(myPath);
+    }
 }
