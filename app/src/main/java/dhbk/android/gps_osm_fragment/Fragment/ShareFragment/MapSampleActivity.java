@@ -70,7 +70,7 @@ public class MapSampleActivity extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map_sample, container, false);
+        return inflater.inflate(R.layout.activity_map_sample, container, false);
     }
 
     @Override
@@ -88,13 +88,13 @@ public class MapSampleActivity extends BaseFragment {
         mapController.setCenter(route.get(0));
         mapController.setZoom(18);
         mStart = new Marker(mMap);
-        Drawable startIcon = getResources().getDrawable(R.drawable.start);
+        Drawable startIcon = getResources().getDrawable(R.drawable.ic_place_green_24dp);
         mStart.setIcon(startIcon);
         mStart.setPosition(route.get(0));
         mMap.getOverlays().add(mStart);
 
         mEnd = new Marker(mMap);
-        Drawable end = getResources().getDrawable(R.drawable.end);
+        Drawable end = getResources().getDrawable(R.drawable.ic_place_blue_24dp);
         mEnd.setIcon(end);
         mEnd.setPosition(route.get(route.size() - 1));
         mMap.getOverlays().add(mEnd);

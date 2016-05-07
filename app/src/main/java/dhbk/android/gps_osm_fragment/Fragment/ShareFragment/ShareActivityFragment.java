@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
@@ -199,13 +200,16 @@ public class ShareActivityFragment extends BaseFragment {
 //                        return;
 //                    }
 //                }
-                mListener.stopUpdateLocation();
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.root_layout, SaveRouteActivityFragment.newInstance(route))
-                        .addToBackStack(null)
-                        .commit();
-
+                if (route.size() > 2) {
+                    mListener.stopUpdateLocation();
+                    getActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.root_layout, SaveRouteActivityFragment.newInstance(route))
+                            .addToBackStack(null)
+                            .commit();
+                } else {
+                    Toast.makeText(getContext(), " Chua co thong tin lo trinh  ", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
