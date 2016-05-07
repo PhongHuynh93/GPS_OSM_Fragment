@@ -32,7 +32,6 @@ import dhbk.android.gps_osm_fragment.R;
  * create an instance of this fragment.
  */
 
-// TODO: 5/1/16 make layout for private chat for each user.
 public class PrivateChatEachUserFragment extends Fragment {
     private static final String ARG_BOTH_NICK = "param1";
     private static final String ARG_FRIEND_NICK = "param2";
@@ -50,7 +49,6 @@ public class PrivateChatEachUserFragment extends Fragment {
         // Required empty public constructor
     }
 
-    // TODO: 5/1/16 nhận nick merge, nick friend, hiện lên toolbar chữ "Chat to "nickFriend""
     public static PrivateChatEachUserFragment newInstance(String param1, String param2) {
         PrivateChatEachUserFragment fragment = new PrivateChatEachUserFragment();
         Bundle args = new Bundle();

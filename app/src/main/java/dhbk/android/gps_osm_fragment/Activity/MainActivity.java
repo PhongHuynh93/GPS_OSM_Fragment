@@ -1,8 +1,13 @@
 package dhbk.android.gps_osm_fragment.Activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,6 +18,8 @@ import android.widget.Toast;
 import com.firebase.client.Firebase;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 
@@ -26,11 +33,15 @@ import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, DirectionActivityFragment.DirectionInterface {
-
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, DirectionActivityFragment.DirectionInterface, LocationListener
+        , ShareActivityFragment.ShareFragmentInterface {
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
     private GoogleApiClient mGoogleApiClient;
 
     private Firebase mFirebaseRefer;
+
+    protected LocationRequest mLocationRequest;
 
     public Firebase getFirebaseRefer() {
         return mFirebaseRefer;
@@ -132,8 +143,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
                 .addApi(LocationServices.API)
+                .addOnConnectionFailedListener(this)
                 .enableAutoManage(this, this)
                 .build();
+        createLocationRequest();
     }
 
 
@@ -156,4 +169,67 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             myFragment.setLanguage(language);
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        // xet co lây dc fragment share ko
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.root_layout);
+        if (fragment instanceof ShareActivityFragment) {
+            ((ShareActivityFragment) fragment).addLocationToRoute(location);
+        }
+    }
+
+    // 2 method dựa vào interface của DirectionActivityFragment
+    @Override
+    public void canUpdateLocation() {
+        if (mGoogleApiClient.isConnected()) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    public void stopUpdateLocation() {
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+    }
+
+
+    protected void startLocationUpdates() {
+        if (mGoogleApiClient.isConnected()) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+    protected void stopLocationUpdates() {
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
 }

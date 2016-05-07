@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
-// TODO: 5/5/16 remove bottom bar 
+// TODO: 5/5/16 remove bottom bar
 public class DirectionActivityFragment extends BaseFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_DESTPLACE = "param1";
@@ -146,24 +147,24 @@ public class DirectionActivityFragment extends BaseFragment {
             public void onMenuTabSelected(@IdRes int menuItemId) {
                 if (menuItemId == R.id.bottomBarItemRun) {
 
-                    mToolbar.setBackgroundColor(getResources().getColor(R.color.bot1));
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot1));
                     drawNewPath(Constant.MODE_RUN);
 
                 } else if (menuItemId == R.id.bottomBarItemBike) {
 
-                    mToolbar.setBackgroundColor(getResources().getColor(R.color.bot2));
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot2));
                     drawNewPath(Constant.MODE_BIKE);
 
 
                 } else if (menuItemId == R.id.bottomBarItemBus) {
 
-                    mToolbar.setBackgroundColor(getResources().getColor(R.color.bot3));
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot3));
                     drawNewPath(Constant.MODE_BUS);
 
 
                 } else if (menuItemId == R.id.bottomBarItemCar) {
 
-                    mToolbar.setBackgroundColor(getResources().getColor(R.color.bot4));
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot4));
                     drawNewPath(Constant.MODE_CAR);
 
                 }
@@ -173,21 +174,21 @@ public class DirectionActivityFragment extends BaseFragment {
             public void onMenuTabReSelected(@IdRes int menuItemId) {
                 if (menuItemId == R.id.bottomBarItemRun) {
 
-                    mToolbar.setBackgroundColor(getResources().getColor(R.color.bot1));
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot1));
                     drawNewPath(Constant.MODE_RUN);
 
                 } else if (menuItemId == R.id.bottomBarItemBike) {
-                    mToolbar.setBackgroundColor(getResources().getColor(R.color.bot2));
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot2));
                     drawNewPath(Constant.MODE_BIKE);
 
 
                 } else if (menuItemId == R.id.bottomBarItemBus) {
-                    mToolbar.setBackgroundColor(getResources().getColor(R.color.bot3));
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot3));
                     drawNewPath(Constant.MODE_BUS);
 
 
                 } else if (menuItemId == R.id.bottomBarItemCar) {
-                    mToolbar.setBackgroundColor(getResources().getColor(R.color.bot4));
+                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot4));
                     drawNewPath(Constant.MODE_CAR);
                 }
             }
@@ -405,8 +406,4 @@ public class DirectionActivityFragment extends BaseFragment {
     public void setStartPlace(Location startPlace) {
         this.mStartPlace = startPlace;
     }
-
-
-    // TODO: 5/5/16 make interface
-
 }
