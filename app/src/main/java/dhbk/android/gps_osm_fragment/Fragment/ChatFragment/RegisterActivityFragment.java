@@ -1,5 +1,6 @@
 package dhbk.android.gps_osm_fragment.Fragment.ChatFragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -79,6 +80,8 @@ public class RegisterActivityFragment extends BaseFragment {
         getActivity().findViewById(R.id.button_register).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final ProgressDialog progress = ProgressDialog.show(getContext(), "Registering......",
+                        "Please wait!!!", true);
                 if (nickEdt.getText().toString().equals("")) {
                     Snackbar.make(getActivity().findViewById(R.id.register_coordinator), "Please enter nickname", Snackbar.LENGTH_LONG).show();
                 } else {
@@ -88,6 +91,7 @@ public class RegisterActivityFragment extends BaseFragment {
                         @Override
                         // dk thành công
                         public void onSuccess(Map<String, Object> result) {
+                            progress.dismiss();
                             Map<String, Object> nickMap = new HashMap<>();
                             // put nick, email to nickList
                             nickMap.put("nick", nickEdt.getText().toString());
@@ -107,6 +111,7 @@ public class RegisterActivityFragment extends BaseFragment {
 
                         @Override
                         public void onError(FirebaseError firebaseError) {
+                            progress.dismiss();
                             //  4/25/16 go to login because your account has already registered
                             Snackbar.make(getActivity().findViewById(R.id.register_coordinator), firebaseError.getMessage(), Snackbar.LENGTH_LONG)
                                     .setAction("LOG IN", new View.OnClickListener() {

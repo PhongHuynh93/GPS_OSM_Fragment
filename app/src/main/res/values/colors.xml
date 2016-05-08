@@ -29,4 +29,6 @@
     <color name="bot4">#FF9800</color>
     <color name="colorGreen">#14FF55</color>
     <color name="transparent">#00000000</color>
+
+    <color name="white">#FFFFFF</color>
 </resources>

@@ -1,8 +1,11 @@
 package dhbk.android.gps_osm_fragment.Fragment.ChatFragment;
 
+import android.app.ProgressDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.transition.Fade;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,7 @@ import com.firebase.client.ValueEventListener;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
+import dhbk.android.gps_osm_fragment.Help.DetailsTransition;
 import dhbk.android.gps_osm_fragment.R;
 
 // TODO: 4/25/16 make animation when transform from fragment to fragment
@@ -59,10 +63,21 @@ public class ChatActivityFragment extends BaseFragment {
         getActivity().findViewById(R.id.button_signup).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                RegisterActivityFragment registerActivityFragment = RegisterActivityFragment.newInstance(emailEdt.getText().toString(), passEdt.getText().toString());
                 // thay bang fragment register
+                // Note that we need the API version check here because the actual transition classes (e.g. Fade)
+                // are not in the support library and are only available in API 21+. The methods we are calling on the Fragment
+                // ARE available in the support library (though they don't do anything on API < 21)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    registerActivityFragment.setSharedElementEnterTransition(new DetailsTransition());
+                    registerActivityFragment.setEnterTransition(new Fade());
+                    setExitTransition(new Fade());
+                    registerActivityFragment.setSharedElementReturnTransition(new DetailsTransition());
+                }
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.root_layout, RegisterActivityFragment.newInstance(emailEdt.getText().toString(), passEdt.getText().toString()))
+                        .addSharedElement(getActivity().findViewById(R.id.button_signup), "sign_up")
+                        .replace(R.id.root_layout, registerActivityFragment)
                         .addToBackStack(null)
                         .commit();
             }
@@ -71,18 +86,22 @@ public class ChatActivityFragment extends BaseFragment {
         getActivity().findViewById(R.id.button_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final ProgressDialog progress;
+                progress = ProgressDialog.show(getContext(), "Logining.....",
+                        "Please wait!!!!", true);
                 // thay bang fragment login
-                ((MainActivity)getActivity()).getFirebaseRefer().authWithPassword(emailEdt.getText().toString(), passEdt.getText().toString(), new Firebase.AuthResultHandler() {
+                ((MainActivity) getActivity()).getFirebaseRefer().authWithPassword(emailEdt.getText().toString(), passEdt.getText().toString(), new Firebase.AuthResultHandler() {
                     @Override
                     public void onAuthenticated(AuthData authData) {
+                        progress.dismiss();
                         ((MainActivity) getActivity()).getFirebaseRefer().child(retrieveSubString(emailEdt.getText().toString())).child("nick").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 getActivity().getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.root_layout, ChooseChatTypeFragment.newInstance(dataSnapshot.getValue(String.class)))
-                                .addToBackStack(null)
-                                .commit();
+                                        .beginTransaction()
+                                        .replace(R.id.root_layout, ChooseChatTypeFragment.newInstance(dataSnapshot.getValue(String.class)))
+                                        .addToBackStack(null)
+                                        .commit();
                             }
 
                             @Override
@@ -90,14 +109,11 @@ public class ChatActivityFragment extends BaseFragment {
 
                             }
                         });
-//                        getActivity().getSupportFragmentManager()
-//                                .beginTransaction()
-//                                .replace(R.id.root_layout, ChooseChatTypeFragment.newInstance())
-//                                .addToBackStack(null)
-//                                .commit();
                     }
+
                     @Override
                     public void onAuthenticationError(FirebaseError firebaseError) {
+                        progress.dismiss();
                         // there was an error
                         Snackbar.make(getActivity().findViewById(R.id.login_coordinator), firebaseError.getMessage(), Snackbar.LENGTH_LONG).show();
 
@@ -109,13 +125,4 @@ public class ChatActivityFragment extends BaseFragment {
         });
     }
 
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-//
-//    public interface OnFragmentChatInteractionListener {
-//        void onFragmentInteraction(Uri uri);
-//    }
 }
