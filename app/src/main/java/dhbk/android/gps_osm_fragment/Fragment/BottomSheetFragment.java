@@ -63,8 +63,6 @@ public class BottomSheetFragment extends Fragment {
         return mRootView;
     }
 
-    // behavior callback
-    // TODO: 4/23/16 when place auto return, add state to this
     @Override
     public void onStart() {
         super.onStart();
@@ -129,7 +127,6 @@ public class BottomSheetFragment extends Fragment {
 
             @Override
             protected void onPostExecute(ArrayList<AttributedPhoto> attributedPhotos) {
-                // TODO: 4/24/16 remove progress dialog
                 // load image on viewpager, remove old images and add new ones.
                 if (attributedPhotos.size() > 0) {
                     mArrayListAttributedPhoto = attributedPhotos;

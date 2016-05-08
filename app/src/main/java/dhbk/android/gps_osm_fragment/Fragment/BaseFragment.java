@@ -11,6 +11,7 @@ import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.util.Log;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
+import dhbk.android.gps_osm_fragment.Help.ChooseLocationFragment;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
@@ -124,6 +126,31 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
 //                        hereMarker.setTitle("You here");
+            mMapView.getOverlays().add(hereMarker);
+            mMapView.invalidate();
+        } else {
+            Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //phong - add marker at a location
+    public void setMarkerAtLocationWithDialog(Location userCurrentLocation, int icon, final FragmentManager fragmentManager) {
+        if (userCurrentLocation != null) {
+            GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
+            mIMapController.setCenter(userCurrentPoint);
+            mIMapController.zoomTo(mMapView.getMaxZoomLevel());
+            Marker hereMarker = new Marker(mMapView);
+            hereMarker.setPosition(userCurrentPoint);
+            hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
+
+            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker, MapView mapView) {
+                    new ChooseLocationFragment().show(fragmentManager, Constant.DIALOG_FRAG);
+                    return true;
+                }
+            });
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();
         } else {
@@ -324,7 +351,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         @Override
         protected void onPostExecute(StringBuffer instructionWithTag) {
             super.onPostExecute(instructionWithTag);
-            // TODO: 5/5/16 speak vietname + english
             String stringFormat = instructionWithTag.toString();
             stringFormat = stringFormat.replaceAll("<en>", "<e>");
             stringFormat = stringFormat.replaceAll("<vi>", "<v>");

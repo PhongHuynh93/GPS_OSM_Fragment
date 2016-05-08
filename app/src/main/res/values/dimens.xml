@@ -11,6 +11,7 @@
     <!--search-->
     <dimen name="searchbar_margintop">31dp</dimen>
     <dimen name="searchbar_marginleft">10dp</dimen>
+    <dimen name="searchbar_edittext_marginleft">16dp</dimen>
 
     <!--chat public -->
     <dimen name="image_height">100dp</dimen>
@@ -20,4 +21,5 @@
     <dimen name="edit_text_padding">10dp</dimen>
     <dimen name="card_corners">2dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
+    <dimen name="searchbar_edittext2_marginleft">20dp</dimen>
 </resources>

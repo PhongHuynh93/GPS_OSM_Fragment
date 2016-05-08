@@ -94,7 +94,6 @@ public class SavedListTripActivityFragment extends Fragment {
 //            sampleMapActivity.putExtras(bundle);
 //            startActivity(sampleMapActivity);
         } else {
-            // TODO: 5/4/16
             //edit
             String id = savedList.get(itemId).getId();
             getActivity().getSupportFragmentManager()

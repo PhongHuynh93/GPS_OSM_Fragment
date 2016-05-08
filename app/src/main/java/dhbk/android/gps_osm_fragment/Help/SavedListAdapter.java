@@ -84,6 +84,7 @@ public class SavedListAdapter extends RecyclerView.Adapter<SavedListAdapter.View
         String[] img = gson.fromJson(imgList, String[].class);
         return img[0];
     }
+
     @Override
     public int getItemCount() {
         return mListRoute.size();

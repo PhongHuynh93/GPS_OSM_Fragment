@@ -15,24 +15,25 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_height="wrap_content"
             android:background="@color/transparent"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="47dp"
-                android:layout_marginRight="47dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="34dp"
                 android:orientation="vertical">
 
                 <android.support.v7.widget.CardView
+                    android:layout_marginRight="@dimen/searchbar_edittext_marginleft"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardBackgroundColor="@color/white">
 
                     <EditText
+                        android:layout_marginStart="@dimen/searchbar_edittext_marginleft"
+                        android:layout_marginEnd="@dimen/searchbar_edittext_marginleft"
                         android:id="@+id/start_point"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -45,12 +46,15 @@
                 </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView
+                    android:layout_marginRight="@dimen/searchbar_edittext_marginleft"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="7dp"
                     app:cardBackgroundColor="@color/white">
 
                     <EditText
+                        android:layout_marginStart="@dimen/searchbar_edittext_marginleft"
+                        android:layout_marginEnd="@dimen/searchbar_edittext_marginleft"
                         android:id="@+id/end_point"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -60,6 +64,35 @@
                         android:textColor="@color/black"
                         android:textColorHint="@color/black"/>
                 </android.support.v7.widget.CardView>
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tab_vehicle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/ic_directions_run_black_24dp"/>
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/ic_directions_bike_black_24dp"/>
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/ic_directions_bus_black_24dp"/>
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/ic_directions_car_black_24dp"/>
+
+
+
+                </android.support.design.widget.TabLayout>
 
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
@@ -78,10 +111,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        android:layout_gravity="bottom|end"
         android:src="@android:drawable/ic_menu_mylocation"
-        android:tint="@color/colorPrimaryDark"
-        app:layout_anchor="@id/toolbar"
-        app:layout_anchorGravity="bottom|end"
-        app:elevation="8dp"/>
+        android:tint="@color/colorPrimaryDark" />
 
 </android.support.design.widget.CoordinatorLayout>
