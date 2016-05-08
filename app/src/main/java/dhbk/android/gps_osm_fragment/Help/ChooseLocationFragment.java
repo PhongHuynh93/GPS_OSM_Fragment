@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import dhbk.android.gps_osm_fragment.Fragment.DirectionFragment.MainActivityFragment;
 import dhbk.android.gps_osm_fragment.R;
 
-// TODO: 5/8/16 build dialog fragment
 public class ChooseLocationFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

@@ -124,7 +124,7 @@ public class MainActivityFragment extends BaseFragment {
 
     }
 
-    // TODO: 5/8/16 go to another fragment with marker place
+    // go to another fragment with marker place, when click a dialog
     public void goToDirectionFragment() {
         if (touchLocation != null && addressOutput != null) {
             getActivity().getSupportFragmentManager()
@@ -193,7 +193,6 @@ public class MainActivityFragment extends BaseFragment {
         touchLocation.setLatitude(p.getLatitude());
         touchLocation.setLongitude(p.getLongitude());
 
-        // TODO: 5/8/16 call MarkerwithDialog Fragment
         setMarkerAtLocationWithDialog(touchLocation, Constant.MARKER, getActivity().getSupportFragmentManager());
 
         startIntentService(touchLocation);
