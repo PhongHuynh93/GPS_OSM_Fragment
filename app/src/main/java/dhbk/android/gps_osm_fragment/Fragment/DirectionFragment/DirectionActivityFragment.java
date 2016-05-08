@@ -134,11 +134,52 @@ public class DirectionActivityFragment extends BaseFragment {
             }
         });
 
+        // TODO: 5/8/16 declare tablayout
         // tab layout
         TabLayout tabLayout = (TabLayout) getActivity().findViewById(R.id.tab_vehicle);
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case 0:
+                        mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot1));
+                        drawNewPath(Constant.MODE_RUN);
+                        break;
+                    case 1:
+                        mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot2));
+                        drawNewPath(Constant.MODE_BIKE);
+                        break;
+                    case 2:
+                        mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot3));
+                        drawNewPath(Constant.MODE_BUS);
+                        break;
+                    case 3:
+                        mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot4));
+                        drawNewPath(Constant.MODE_CAR);
+                }
+//                if (menuItemId == R.id.bottomBarItemRun) {
+//
+//                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot1));
+//                    drawNewPath(Constant.MODE_RUN);
+//
+//                } else if (menuItemId == R.id.bottomBarItemBike) {
+//
+//                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot2));
+//                    drawNewPath(Constant.MODE_BIKE);
+//
+//
+//                } else if (menuItemId == R.id.bottomBarItemBus) {
+//
+//                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot3));
+//                    drawNewPath(Constant.MODE_BUS);
+//
+//
+//                } else if (menuItemId == R.id.bottomBarItemCar) {
+//
+//                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot4));
+//                    drawNewPath(Constant.MODE_CAR);
+//
+//                }
 
             }
 
