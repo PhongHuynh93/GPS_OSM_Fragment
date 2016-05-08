@@ -179,6 +179,7 @@ public class DirectionActivityFragment extends BaseFragment {
             }
         });
 
+        drawNewPathOnTab();
     }
 
     // phong draw path depends on current tab
