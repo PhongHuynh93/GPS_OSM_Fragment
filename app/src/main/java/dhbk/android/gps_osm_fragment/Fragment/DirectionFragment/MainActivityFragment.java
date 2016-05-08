@@ -45,6 +45,8 @@ public class MainActivityFragment extends BaseFragment {
     public static final String TAG = "MainActivityFragment";
     private AddressResultReceiver mResultReceiver;
     private Place mPlace;
+    private Location touchLocation;
+    private String addressOutput;
 
     public static MainActivityFragment newInstance() {
         MainActivityFragment mainActivityFragment = new MainActivityFragment();
@@ -122,6 +124,17 @@ public class MainActivityFragment extends BaseFragment {
 
     }
 
+    // TODO: 5/8/16 go to another fragment with marker place
+    public void goToDirectionFragment() {
+        if (touchLocation != null && addressOutput != null) {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.root_layout, DirectionActivityFragment.newInstance(addressOutput, touchLocation.getLatitude(), touchLocation.getLongitude()), Constant.DIRECTION_FRAGMENT)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -176,12 +189,12 @@ public class MainActivityFragment extends BaseFragment {
         // make search bar and bottom sheet contain address
 
         // draw marker
-        Location touchLocation = new Location("touchLocation");
+        touchLocation = new Location("touchLocation");
         touchLocation.setLatitude(p.getLatitude());
         touchLocation.setLongitude(p.getLongitude());
 
         // TODO: 5/8/16 call MarkerwithDialog Fragment
-        setMarkerAtLocationWithDialog(touchLocation, Constant.MARKER, getFragmentManager());
+        setMarkerAtLocationWithDialog(touchLocation, Constant.MARKER, getActivity().getSupportFragmentManager());
 
         startIntentService(touchLocation);
         return true;
@@ -232,6 +245,7 @@ public class MainActivityFragment extends BaseFragment {
 
     // display address in bottom sheet + add to search
     private void displayAddressOutput(String addressOutput) {
+        this.addressOutput = addressOutput;
         Log.i(TAG, "displayAddressOutput: " + addressOutput);
         BottomSheetFragment bottomSheetFragment = (BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets);
         BottomSheetBehavior<View> bottomSheetBehavior = bottomSheetFragment.getBottomSheetBehavior();
