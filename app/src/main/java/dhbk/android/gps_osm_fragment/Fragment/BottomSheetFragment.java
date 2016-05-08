@@ -17,6 +17,7 @@ import com.google.android.gms.location.places.Place;
 import java.util.ArrayList;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
+import dhbk.android.gps_osm_fragment.Fragment.DirectionFragment.MainActivityFragment;
 import dhbk.android.gps_osm_fragment.Help.ImagePagerAdapter;
 import dhbk.android.gps_osm_fragment.Help.PhotoTask;
 import dhbk.android.gps_osm_fragment.R;
@@ -127,11 +128,15 @@ public class BottomSheetFragment extends Fragment {
 
             @Override
             protected void onPostExecute(ArrayList<AttributedPhoto> attributedPhotos) {
-                // load image on viewpager, remove old images and add new ones.
-                if (attributedPhotos.size() > 0) {
-                    mArrayListAttributedPhoto = attributedPhotos;
-                    ImagePagerAdapter imagePagerAdapter = new ImagePagerAdapter(getChildFragmentManager(), attributedPhotos.size());
-                    viewPager.setAdapter(imagePagerAdapter);
+                // if not MainActivityFragment , not do this
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.root_layout);
+                if (fragment instanceof MainActivityFragment) {
+                    // load image on viewpager, remove old images and add new ones.
+                    if (attributedPhotos.size() > 0) {
+                        mArrayListAttributedPhoto = attributedPhotos;
+                        ImagePagerAdapter imagePagerAdapter = new ImagePagerAdapter(getChildFragmentManager(), attributedPhotos.size());
+                        viewPager.setAdapter(imagePagerAdapter);
+                    }
                 }
             }
         }.execute(new PhotoTask.MyTaskParams(id, ((MainActivity)getActivity()).getGoogleApiClient()));

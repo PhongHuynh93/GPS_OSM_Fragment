@@ -306,12 +306,6 @@ public class MainActivityFragment extends BaseFragment {
                 // Get the user's selected place from the Intent.
                  mPlace = PlaceAutocomplete.getPlace(getContext(), data);
                 ((EditText) getActivity().findViewById(R.id.search_bar)).setText(mPlace.getName());
-//                // set startPlace
-//                Location startPlace = new Location("location");
-//                startPlace.setLatitude(mPlace.getLatLng().latitude);
-//                startPlace.setLongitude(mPlace.getLatLng().longitude);
-//                setStartPlace(startPlace);
-
 
                 ((BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets)).addPlaceToBottomSheet(mPlace);
 //                // remove marker on the map, center at that point and add marker.
