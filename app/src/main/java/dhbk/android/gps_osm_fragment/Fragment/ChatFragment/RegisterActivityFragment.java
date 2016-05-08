@@ -2,6 +2,7 @@ package dhbk.android.gps_osm_fragment.Fragment.ChatFragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
+import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.Help.Nick;
 import dhbk.android.gps_osm_fragment.R;
 
@@ -92,6 +94,13 @@ public class RegisterActivityFragment extends BaseFragment {
                         // dk thành công
                         public void onSuccess(Map<String, Object> result) {
                             progress.dismiss();
+                            // TODO: 5/8/16 add to share preference
+                            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putString(Constant.KEY_PREF_EMAIL, emailEdt.getText().toString());
+                            editor.putString(Constant.KEY_PREF_PASS, passEdt.getText().toString());
+                            editor.apply();
+
                             Map<String, Object> nickMap = new HashMap<>();
                             // put nick, email to nickList
                             nickMap.put("nick", nickEdt.getText().toString());
