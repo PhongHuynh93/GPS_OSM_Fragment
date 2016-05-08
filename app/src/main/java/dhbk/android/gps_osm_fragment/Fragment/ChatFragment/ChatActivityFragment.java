@@ -1,6 +1,8 @@
 package dhbk.android.gps_osm_fragment.Fragment.ChatFragment;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,10 +21,10 @@ import com.firebase.client.ValueEventListener;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
+import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.Help.DetailsTransition;
 import dhbk.android.gps_osm_fragment.R;
 
-// TODO: 4/25/16 make animation when transform from fragment to fragment
 public class ChatActivityFragment extends BaseFragment {
     public static final String TAG = "ChatActivityFragment";
 
@@ -60,6 +62,15 @@ public class ChatActivityFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
         final EditText emailEdt = (EditText) getActivity().findViewById(R.id.email_login);
         final EditText passEdt = (EditText) getActivity().findViewById(R.id.password_login);
+
+        // TODO: 5/8/16 read share ref to write email, pass
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String email = sharedPref.getString(Constant.KEY_PREF_EMAIL, "Email@gmail.com");
+        final String pass = sharedPref.getString(Constant.KEY_PREF_PASS, "123");
+
+        emailEdt.setText(email);
+        passEdt.setText(pass);
+
         getActivity().findViewById(R.id.button_signup).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,6 +105,13 @@ public class ChatActivityFragment extends BaseFragment {
                     @Override
                     public void onAuthenticated(AuthData authData) {
                         progress.dismiss();
+                        // TODO: 5/8/16 add to share pref
+                        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString(Constant.KEY_PREF_EMAIL, emailEdt.getText().toString());
+                        editor.putString(Constant.KEY_PREF_PASS, passEdt.getText().toString());
+                        editor.apply();
+
                         ((MainActivity) getActivity()).getFirebaseRefer().child(retrieveSubString(emailEdt.getText().toString())).child("nick").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -103,7 +121,6 @@ public class ChatActivityFragment extends BaseFragment {
                                         .addToBackStack(null)
                                         .commit();
                             }
-
                             @Override
                             public void onCancelled(FirebaseError firebaseError) {
 
@@ -116,8 +133,6 @@ public class ChatActivityFragment extends BaseFragment {
                         progress.dismiss();
                         // there was an error
                         Snackbar.make(getActivity().findViewById(R.id.login_coordinator), firebaseError.getMessage(), Snackbar.LENGTH_LONG).show();
-
-
                     }
                 });
 

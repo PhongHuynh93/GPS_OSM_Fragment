@@ -44,4 +44,8 @@ public class Constant {
     public static final String LAN_EN = "en";
     public static final String LAN_VI = "vi";
     public static final java.lang.String DIALOG_FRAG = "dialog_fragment_tag";
+
+    // share pref
+    public static final String KEY_PREF_EMAIL = "key_email_pref";
+    public static final String KEY_PREF_PASS = "key_pass_pref";
 }
