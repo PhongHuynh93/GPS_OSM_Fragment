@@ -56,6 +56,7 @@ public class DirectionActivityFragment extends BaseFragment {
 
     private String language = Constant.LAN_EN;
     private TabLayout tabLayout;
+    private Location touchLocation;
 
     public void setLanguage(String language) {
         this.language = language;
@@ -204,7 +205,7 @@ public class DirectionActivityFragment extends BaseFragment {
     // xóa overlay + vẽ + phóng to
     private void drawNewPath(String mode) {
         if (mStartPlace != null && mDestinationPlace != null) {
-            mMapView.getOverlays().clear();
+            clearMap();
             drawPathOSMWithInstruction(mStartPlace, mDestinationPlace, mode, Constant.WIDTH_LINE, language);
         }
     }
@@ -305,6 +306,16 @@ public class DirectionActivityFragment extends BaseFragment {
         }
     }
 
+    public void drawPathWithStartPlace() {
+        mStartPlace = touchLocation;
+        drawNewPathOnTab();
+    }
+
+    public void drawPathWithDesPlace() {
+        mDestinationPlace = touchLocation;
+        drawNewPathOnTab();
+    }
+
     // tạo interface và gỡ interface(nếu là listen thì gỡ ra)
     public interface DirectionInterface {
         void navChooseLanguage(String language);
@@ -317,12 +328,6 @@ public class DirectionActivityFragment extends BaseFragment {
         } else {
             throw new ClassCastException(context.toString() + " must implement OnRageComicSelected.");
         }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     @Override
@@ -345,10 +350,32 @@ public class DirectionActivityFragment extends BaseFragment {
         super.onDestroyView();
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+
     //     tap để đóng cửa sổ lại
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
         InfoWindow.closeAllInfoWindowsOn(mMapView);
+        return true;
+    }
+
+    @Override
+    public boolean longPressHelper(GeoPoint p) {
+        // reverse location into address
+        // make search bar and bottom sheet contain address
+
+        // draw marker
+        touchLocation = new Location("touchLocation");
+        touchLocation.setLatitude(p.getLatitude());
+        touchLocation.setLongitude(p.getLongitude());
+
+        setMarkerAtLocationWithDialogWithStartPlace(touchLocation, Constant.MARKER, getActivity().getSupportFragmentManager());
+
         return true;
     }
 

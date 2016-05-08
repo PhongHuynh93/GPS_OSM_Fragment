@@ -35,5 +35,10 @@
         name="pick_action">
         <item>Set as destination</item>
     </string-array>
+    <string-array
+        name="pick_action_with_start">
+        <item>Set as starting point</item>
+        <item>Set as destination</item>
+    </string-array>
 </resources>
 

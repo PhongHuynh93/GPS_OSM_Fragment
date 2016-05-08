@@ -47,6 +47,7 @@ import java.util.Locale;
 
 import dhbk.android.gps_osm_fragment.Activity.MainActivity;
 import dhbk.android.gps_osm_fragment.Help.ChooseLocationFragment;
+import dhbk.android.gps_osm_fragment.Help.ChooseLocationFragmentWithStart;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
@@ -133,12 +134,12 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
-    //phong - add marker at a location
+    //phong - add marker at a location + dialog (des place)
     public void setMarkerAtLocationWithDialog(Location userCurrentLocation, int icon, final FragmentManager fragmentManager) {
         if (userCurrentLocation != null) {
             GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
-            mIMapController.setCenter(userCurrentPoint);
-            mIMapController.zoomTo(mMapView.getMaxZoomLevel());
+//            mIMapController.setCenter(userCurrentPoint);
+//            mIMapController.zoomTo(mMapView.getMaxZoomLevel());
             Marker hereMarker = new Marker(mMapView);
             hereMarker.setPosition(userCurrentPoint);
             hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
@@ -157,6 +158,32 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
         }
     }
+
+    //phong - add marker at a location + dialog (start + des place)
+    public void setMarkerAtLocationWithDialogWithStartPlace(Location userCurrentLocation, int icon, final FragmentManager fragmentManager) {
+        if (userCurrentLocation != null) {
+            GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
+//            mIMapController.setCenter(userCurrentPoint);
+//            mIMapController.zoomTo(mMapView.getMaxZoomLevel());
+            Marker hereMarker = new Marker(mMapView);
+            hereMarker.setPosition(userCurrentPoint);
+            hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
+
+            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker, MapView mapView) {
+                    new ChooseLocationFragmentWithStart().show(fragmentManager, Constant.DIALOG_FRAG);
+                    return true;
+                }
+            });
+            mMapView.getOverlays().add(hereMarker);
+            mMapView.invalidate();
+        } else {
+            Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     // phong - add marker with title
     public void setMarkerAtLocation(Location userCurrentLocation, int icon, String title) {
