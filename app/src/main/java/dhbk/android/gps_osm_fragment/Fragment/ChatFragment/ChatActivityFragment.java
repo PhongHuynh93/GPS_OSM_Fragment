@@ -98,7 +98,7 @@ public class ChatActivityFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 final ProgressDialog progress;
-                progress = ProgressDialog.show(getContext(), "Logining.....",
+                progress = ProgressDialog.show(getContext(), "Login.....",
                         "Please wait!!!!", true);
                 // thay bang fragment login
                 ((MainActivity) getActivity()).getFirebaseRefer().authWithPassword(emailEdt.getText().toString(), passEdt.getText().toString(), new Firebase.AuthResultHandler() {
