@@ -75,33 +75,10 @@ public class MainActivityFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         super.makeMapDefaultSetting();
 
         // receive address at a location.
         mResultReceiver = new AddressResultReceiver(new Handler());
-
-
-//        final SupportPlaceAutocompleteFragment autocompleteFragment = (SupportPlaceAutocompleteFragment)
-//                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                mPlace = place;
-//                ((BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets)).addPlaceToBottomSheet(place);
-//                // remove marker on the map, center at that point and add marker.
-//                clearMap();
-//                Location placeLocation = new Location("Test");
-//                placeLocation.setLatitude(place.getLatLng().latitude);
-//                placeLocation.setLongitude(place.getLatLng().longitude);
-//                setMarkerAtLocation(placeLocation, Constant.MARKER);
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//
-//            }
-//        });
 
         declareSearch();
 
@@ -202,7 +179,9 @@ public class MainActivityFragment extends BaseFragment {
         Location touchLocation = new Location("touchLocation");
         touchLocation.setLatitude(p.getLatitude());
         touchLocation.setLongitude(p.getLongitude());
-        setMarkerAtLocation(touchLocation, Constant.MARKER);
+
+        // TODO: 5/8/16 call MarkerwithDialog Fragment
+        setMarkerAtLocationWithDialog(touchLocation, Constant.MARKER, getFragmentManager());
 
         startIntentService(touchLocation);
         return true;
@@ -251,7 +230,7 @@ public class MainActivityFragment extends BaseFragment {
         }
     }
 
-    // display address in bottom sheet
+    // display address in bottom sheet + add to search
     private void displayAddressOutput(String addressOutput) {
         Log.i(TAG, "displayAddressOutput: " + addressOutput);
         BottomSheetFragment bottomSheetFragment = (BottomSheetFragment) getChildFragmentManager().findFragmentById(R.id.map_bottom_sheets);
@@ -262,6 +241,9 @@ public class MainActivityFragment extends BaseFragment {
             bottomSheetBehavior.setPeekHeight(369);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
+
+        EditText searchBar = (EditText) getActivity().findViewById(R.id.search_bar);
+        searchBar.setText(addressOutput);
     }
 
 

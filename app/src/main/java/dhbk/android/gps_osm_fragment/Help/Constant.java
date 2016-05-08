@@ -43,4 +43,5 @@ public class Constant {
     public static final String DIRECTION_FRAGMENT = "direction_fragment";
     public static final String LAN_EN = "en";
     public static final String LAN_VI = "vi";
+    public static final java.lang.String DIALOG_FRAG = "dialog_fragment_tag";
 }
