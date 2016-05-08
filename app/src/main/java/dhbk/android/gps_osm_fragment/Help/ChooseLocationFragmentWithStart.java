@@ -21,7 +21,6 @@ public class ChooseLocationFragmentWithStart extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
-                            // TODO: 5/8/16 change startplace
                             case 0:
                                 Fragment fragmentStart = getActivity().getSupportFragmentManager().findFragmentById(R.id.root_layout);
                                 if (fragmentStart instanceof DirectionActivityFragment) {
@@ -31,7 +30,6 @@ public class ChooseLocationFragmentWithStart extends DialogFragment {
                                 }
                                 break;
                             case 1:
-                                // TODO: 5/8/16 change dest place
                                 Fragment fragmentDes = getActivity().getSupportFragmentManager().findFragmentById(R.id.root_layout);
                                 if (fragmentDes instanceof DirectionActivityFragment) {
                                     DirectionActivityFragment directionActivityFragment = (DirectionActivityFragment) fragmentDes;
