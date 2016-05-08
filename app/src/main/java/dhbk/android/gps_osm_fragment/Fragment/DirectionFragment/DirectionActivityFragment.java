@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -23,8 +22,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabClickListener;
 
 import org.osmdroid.bonuspack.overlays.InfoWindow;
 import org.osmdroid.util.GeoPoint;
@@ -34,7 +31,6 @@ import dhbk.android.gps_osm_fragment.Fragment.BaseFragment;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
-// TODO: 5/5/16 remove bottom bar
 public class DirectionActivityFragment extends BaseFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_DESTPLACE = "param1";
@@ -52,7 +48,6 @@ public class DirectionActivityFragment extends BaseFragment {
     private MapView mMapView;
     private EditText mStartPoint;
     private EditText mEndPoint;
-    private BottomBar mBottomBar;
     private double mLatitudeDesplace;
     private double mLongitudeDesplace;
     private Location mStartPlace;
@@ -60,6 +55,7 @@ public class DirectionActivityFragment extends BaseFragment {
     private DirectionInterface mListener;
 
     private String language = Constant.LAN_EN;
+    private TabLayout tabLayout;
 
     public void setLanguage(String language) {
         this.language = language;
@@ -122,8 +118,6 @@ public class DirectionActivityFragment extends BaseFragment {
 
         }
 
-        declareBottomNavigation(savedInstanceState);
-
         getActivity().findViewById(R.id.fab_my_location).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,12 +128,37 @@ public class DirectionActivityFragment extends BaseFragment {
             }
         });
 
-        // TODO: 5/8/16 declare tablayout
         // tab layout
-        TabLayout tabLayout = (TabLayout) getActivity().findViewById(R.id.tab_vehicle);
+        tabLayout = (TabLayout) getActivity().findViewById(R.id.tab_vehicle);
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case 0:
+                        mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+                        drawNewPath(Constant.MODE_RUN);
+                        break;
+                    case 1:
+                        mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot2));
+                        drawNewPath(Constant.MODE_BIKE);
+                        break;
+                    case 2:
+                        mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot3));
+                        drawNewPath(Constant.MODE_BUS);
+                        break;
+                    case 3:
+                        mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot4));
+                        drawNewPath(Constant.MODE_CAR);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
                 switch (tab.getPosition()) {
                     case 0:
                         mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot1));
@@ -157,113 +176,14 @@ public class DirectionActivityFragment extends BaseFragment {
                         mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot4));
                         drawNewPath(Constant.MODE_CAR);
                 }
-//                if (menuItemId == R.id.bottomBarItemRun) {
-//
-//                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot1));
-//                    drawNewPath(Constant.MODE_RUN);
-//
-//                } else if (menuItemId == R.id.bottomBarItemBike) {
-//
-//                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot2));
-//                    drawNewPath(Constant.MODE_BIKE);
-//
-//
-//                } else if (menuItemId == R.id.bottomBarItemBus) {
-//
-//                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot3));
-//                    drawNewPath(Constant.MODE_BUS);
-//
-//
-//                } else if (menuItemId == R.id.bottomBarItemCar) {
-//
-//                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot4));
-//                    drawNewPath(Constant.MODE_CAR);
-//
-//                }
-
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
 
-    }
-
-    // phong - khung chứa 4 icons phương tiện.
-    private void declareBottomNavigation(Bundle savedInstanceState) {
-        mBottomBar = BottomBar.attach(getActivity().findViewById(R.id.map), savedInstanceState);
-        mBottomBar.noTopOffset();
-
-        mBottomBar.setItemsFromMenu(R.menu.bottombar_menu, new OnMenuTabClickListener() {
-            @Override
-            public void onMenuTabSelected(@IdRes int menuItemId) {
-                if (menuItemId == R.id.bottomBarItemRun) {
-
-                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot1));
-                    drawNewPath(Constant.MODE_RUN);
-
-                } else if (menuItemId == R.id.bottomBarItemBike) {
-
-                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot2));
-                    drawNewPath(Constant.MODE_BIKE);
-
-
-                } else if (menuItemId == R.id.bottomBarItemBus) {
-
-                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot3));
-                    drawNewPath(Constant.MODE_BUS);
-
-
-                } else if (menuItemId == R.id.bottomBarItemCar) {
-
-                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot4));
-                    drawNewPath(Constant.MODE_CAR);
-
-                }
-            }
-
-            @Override
-            public void onMenuTabReSelected(@IdRes int menuItemId) {
-                if (menuItemId == R.id.bottomBarItemRun) {
-
-                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot1));
-                    drawNewPath(Constant.MODE_RUN);
-
-                } else if (menuItemId == R.id.bottomBarItemBike) {
-                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot2));
-                    drawNewPath(Constant.MODE_BIKE);
-
-
-                } else if (menuItemId == R.id.bottomBarItemBus) {
-                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot3));
-                    drawNewPath(Constant.MODE_BUS);
-
-
-                } else if (menuItemId == R.id.bottomBarItemCar) {
-                    mToolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bot4));
-                    drawNewPath(Constant.MODE_CAR);
-                }
-            }
-        });
-
-        // Setting colors for different tabs when there's more than three of them.
-        // You can set colors for tabs in three different ways as shown below.
-        mBottomBar.mapColorForTab(0, "#795548");//0xFF5D4037);
-        mBottomBar.mapColorForTab(1, "#7B1FA2");//"#7B1FA2");
-        mBottomBar.mapColorForTab(2, "#FF5252");//"#FF5252");
-        mBottomBar.mapColorForTab(3, "#FF9800");//"#FF9800"  );
     }
 
     // phong draw path depends on current tab
     private void drawNewPathOnTab() {
-        switch (mBottomBar.getCurrentTabPosition()) {
+        switch (tabLayout.getSelectedTabPosition()) {
             case 0:
                 drawNewPath(Constant.MODE_RUN);
                 break;
@@ -422,16 +342,6 @@ public class DirectionActivityFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-    }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // Necessary to restore the BottomBar's state, otherwise we would
-        // lose the current tab on orientation change.
-        mBottomBar.onSaveInstanceState(outState);
     }
 
     //     tap để đóng cửa sổ lại
