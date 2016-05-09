@@ -85,6 +85,7 @@ public class RegisterActivityFragment extends BaseFragment {
                 final ProgressDialog progress = ProgressDialog.show(getContext(), "Registering......",
                         "Please wait!!!", true);
                 if (nickEdt.getText().toString().equals("")) {
+                    progress.dismiss();
                     Snackbar.make(getActivity().findViewById(R.id.register_coordinator), "Please enter nickname", Snackbar.LENGTH_LONG).show();
                 } else {
 
