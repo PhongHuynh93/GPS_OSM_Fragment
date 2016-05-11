@@ -142,17 +142,18 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
 
+            Log.i(TAG, "setMarkerAtLocation: " + title);
             // TODO: 5/11/16 change this to remove <div>
-            String instRemoveDiv = title;
-//            // remove a part of string
-//            String instruction = instructionNeedRemove;
-//            if (instruction.indexOf("\n\n") != -1) {
-//                // it contains world
-//                instruction = instructionNeedRemove.substring(0, instructionNeedRemove.indexOf("\n\n"));
+//            String instRemoveDiv = title;
+////            // remove a part of string
+////            String instruction = instructionNeedRemove;
+////            if (instruction.indexOf("\n\n") != -1) {
+////                // it contains world
+////                instruction = instructionNeedRemove.substring(0, instructionNeedRemove.indexOf("\n\n"));
+////            }
+//            if (title.contains("</div>")) {
+//                instRemoveDiv = title.substring(0, title.indexOf("<div"));
 //            }
-            if (title.contains("</div>")) {
-                instRemoveDiv = title.substring(0, title.indexOf("<div"));
-            }
 
             // TODO: 5/11/16 remove  string after 1. at -> end 2. at -> , (but not remove at in "at the roundable")
 
@@ -162,7 +163,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
 
 //            final String instructionKhongDau = new AccentRemover().toUrlFriendly(instruction);
 //            Log.i(TAG, "setMarkerAtLocation: " + Html.toHtml(Html.fromHtml(title)));
-            hereMarker.setTitle(instRemoveDiv);
+            hereMarker.setTitle(changeInstructionFromGoogle(title));
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();
 
@@ -183,6 +184,60 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         } else {
             Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // change instruction after getting it from google
+    private String changeInstructionFromGoogle(String title) {
+        // change this to remove <div>
+        String instRemove = title;
+
+        if (instRemove.contains("</div>")) {
+            instRemove = instRemove.substring(0, instRemove.indexOf("<div"));
+        }
+
+        // TODO: 5/11/16 depends on language, remove words  -> check language
+        // remove  string after "At"
+        // 1. at -> end
+        // 2. at -> , (but not remove at in "at the roundable")
+        if (instRemove.contains("at")) {
+            // TODO: 5/11/16 remove at -> end but not remove "onto", "toward"
+            String instAfterAt = instRemove.substring(instRemove.indexOf("at"), instRemove.length());
+
+            instRemove = instRemove.substring(0, instRemove.indexOf("at"));
+
+            if (instAfterAt.contains("onto")){
+                instAfterAt = instAfterAt.substring(instAfterAt.indexOf("onto"), instAfterAt.length());
+            } else if (instAfterAt.contains("toward")) {
+                instAfterAt = instAfterAt.substring(instAfterAt.indexOf("toward"), instAfterAt.length());
+            }
+
+            // TODO: 5/11/16 concats 2 string
+            instRemove = instRemove + instAfterAt;
+        }
+
+        if (instRemove.contains("At")) {
+            // nếu ko có chữ tại vòng xoay, thì xóa đến dấu ,
+            if (!instRemove.contains("roundabout")) {
+                // bỏ từ dầu đến dấu , để lấy kỹ tự cách dầu , 2 space (do có khoảng trăngg)
+                instRemove = instRemove.substring(instRemove.indexOf(",") + 2, instRemove.length()); // đến length do ký tự cuối là length - 1 mà substring lại ko lấy ký tự length()
+            }
+        }
+
+
+        // remove after past - Continue straight past Piaggio SAPA Điện BIên Phủ onto <b>Xa lộ Hà Nội</b>/<b>Điện Biên Phủ</b>/<b>QL52</b>
+        if (instRemove.contains("Continue straight")) {
+            // nếu có chữ past nữa thì bỏ phần sau past
+            if (instRemove.contains("past")) {
+                // TODO: 5/11/16 remove after past but not remove "onto" "toward"
+                instRemove = instRemove.substring(0, instRemove.indexOf("past"));
+            }
+        }
+
+        Log.i(TAG, "changeInstructionFromGoogle: " + instRemove);
+
+        // TODO: 5/11/16 remove tag from html and return string
+//            final String instructionNeedRemove = "" + Html.fromHtml(title);
+        return instRemove;
     }
 
 
@@ -235,7 +290,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     @Override
