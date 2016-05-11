@@ -63,7 +63,6 @@ public class ChatActivityFragment extends BaseFragment {
         final EditText emailEdt = (EditText) getActivity().findViewById(R.id.email_login);
         final EditText passEdt = (EditText) getActivity().findViewById(R.id.password_login);
 
-        // TODO: 5/8/16 read share ref to write email, pass
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         String email = sharedPref.getString(Constant.KEY_PREF_EMAIL, "Email@gmail.com");
         final String pass = sharedPref.getString(Constant.KEY_PREF_PASS, "123");
@@ -105,7 +104,6 @@ public class ChatActivityFragment extends BaseFragment {
                     @Override
                     public void onAuthenticated(AuthData authData) {
                         progress.dismiss();
-                        // TODO: 5/8/16 add to share pref
                         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
                         editor.putString(Constant.KEY_PREF_EMAIL, emailEdt.getText().toString());

@@ -13,7 +13,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -134,6 +133,59 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
+    // phong - add marker with instruction
+    public void setMarkerAtLocation(Location userCurrentLocation, int icon, String title) {
+        if (userCurrentLocation != null) {
+            GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
+            Marker hereMarker = new Marker(mMapView);
+            hereMarker.setPosition(userCurrentPoint);
+            hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
+
+            // TODO: 5/11/16 change this to remove <div>
+            String instRemoveDiv = title;
+//            // remove a part of string
+//            String instruction = instructionNeedRemove;
+//            if (instruction.indexOf("\n\n") != -1) {
+//                // it contains world
+//                instruction = instructionNeedRemove.substring(0, instructionNeedRemove.indexOf("\n\n"));
+//            }
+            if (title.contains("</div>")) {
+                instRemoveDiv = title.substring(0, title.indexOf("<div"));
+            }
+
+            // TODO: 5/11/16 remove  string after 1. at -> end 2. at -> , (but not remove at in "at the roundable")
+
+            // TODO: 5/11/16 use this after remove tag of html  -> move downward
+//            final String instructionNeedRemove = "" + Html.fromHtml(title);
+
+
+//            final String instructionKhongDau = new AccentRemover().toUrlFriendly(instruction);
+//            Log.i(TAG, "setMarkerAtLocation: " + Html.toHtml(Html.fromHtml(title)));
+            hereMarker.setTitle(instRemoveDiv);
+            mMapView.getOverlays().add(hereMarker);
+            mMapView.invalidate();
+
+//            final String instructionWhenClickMarker = instruction;
+
+//             when click marker, speak instruction
+//            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+//                @Override
+//                public boolean onMarkerClick(Marker marker, MapView mapView) {
+//                    marker.showInfoWindow();
+//                    mapView.getController().animateTo(marker.getPosition());
+//                    new GetLanguageDetect2().execute(instructionWhenClickMarker);
+//                    return true;
+//                }
+//            });
+
+
+        } else {
+            Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
     //phong - add marker at a location + dialog (des place)
     public void setMarkerAtLocationWithDialog(Location userCurrentLocation, int icon, final FragmentManager fragmentManager) {
         if (userCurrentLocation != null) {
@@ -185,47 +237,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
     }
 
 
-    // phong - add marker with title
-    public void setMarkerAtLocation(Location userCurrentLocation, int icon, String title) {
-        if (userCurrentLocation != null) {
-            GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
-            Marker hereMarker = new Marker(mMapView);
-            hereMarker.setPosition(userCurrentPoint);
-            hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-            hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
-            final String instructionNeedRemove = "" + Html.fromHtml(title);
-
-            // remove a part of string
-            String instruction = instructionNeedRemove;
-            if (instruction.indexOf("\n\n") != -1) {
-                // it contains world
-                instruction = instructionNeedRemove.substring(0, instructionNeedRemove.indexOf("\n\n"));
-            }
-
-//            final String instructionKhongDau = new AccentRemover().toUrlFriendly(instruction);
-//            Log.i(TAG, "setMarkerAtLocation: " + Html.toHtml(Html.fromHtml(title)));
-            hereMarker.setTitle(instruction);
-            mMapView.getOverlays().add(hereMarker);
-            mMapView.invalidate();
-
-            final String instructionWhenClickMarker = instruction;
-
-//             when click marker, speak instruction
-            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker, MapView mapView) {
-                    marker.showInfoWindow();
-                    mapView.getController().animateTo(marker.getPosition());
-                    new GetLanguageDetect2().execute(instructionWhenClickMarker);
-                    return true;
-                }
-            });
-
-
-        } else {
-            Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
-        }
-    }
 
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
