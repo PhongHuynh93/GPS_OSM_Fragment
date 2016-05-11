@@ -8,12 +8,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,14 +29,6 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.PathOverlay;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +41,7 @@ import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
 // TODO: 5/11/16 when choose vi/en , remove old paths and draw new path immediately
-public abstract class BaseFragment extends Fragment implements MapEventsReceiver {
+public abstract class BaseFragment extends BaseFragmentHelper implements MapEventsReceiver {
     private static final String TAG = "BaseFragment";
     private MapView mMapView;
     private IMapController mIMapController;
@@ -61,6 +50,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
     HashMap<String, String> map = new HashMap<String, String>();
     TextToSpeech t1;
     TextToSpeech t2;
+
     private String language = Constant.LAN_VI;
 
     public MapView getMapView() {
@@ -82,6 +72,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         // add listen when tap the map.
         clearMap();
 
+        // TODO - en - use android speak, vi - use different app (change this)
         map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
         t1 = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -117,8 +108,12 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         return LocationServices.FusedLocationApi.getLastLocation(((MainActivity) getActivity()).getGoogleApiClient());
     }
 
+    private void centerMap(Location startPoint) {
+        mMapView.getController().setCenter(new GeoPoint(startPoint.getLatitude(), startPoint.getLongitude()));
+    }
+
     //phong - add marker at a location
-    public void setMarkerAtLocation(Location userCurrentLocation, int icon) {
+    protected void setMarkerAtLocation(Location userCurrentLocation, int icon) {
         if (userCurrentLocation != null) {
             GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
             mIMapController.setCenter(userCurrentPoint);
@@ -127,7 +122,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             hereMarker.setPosition(userCurrentPoint);
             hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
-//                        hereMarker.setTitle("You here");
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();
         } else {
@@ -135,8 +129,8 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
-    // phong - add marker with instruction
-    public void setMarkerAtLocation(Location userCurrentLocation, int icon, String title) {
+    // phong - add marker at a location with instruction + speak
+    protected void setMarkerAtLocation(Location userCurrentLocation, int icon, String title) {
         if (userCurrentLocation != null) {
             GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
             Marker hereMarker = new Marker(mMapView);
@@ -169,65 +163,8 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         }
     }
 
-    // change instruction after getting it from google
-    private String changeInstructionFromGoogle(String title) {
-        // change this to remove <div>
-        String instRemove = title;
-
-        if (instRemove.contains("</div>")) {
-            instRemove = instRemove.substring(0, instRemove.indexOf("<div"));
-        }
-
-        // TODO: 5/11/16 depends on language, remove words  -> check language
-        // remove  string after "At"
-        // 1. at -> end
-        // 2. at -> , (but not remove at in "at the roundable")
-        if (instRemove.contains("at")) {
-            String instAfterAt = instRemove.substring(instRemove.indexOf("at"), instRemove.length());
-
-            instRemove = instRemove.substring(0, instRemove.indexOf("at"));
-
-            if (instAfterAt.contains("onto")) {
-                instAfterAt = instAfterAt.substring(instAfterAt.indexOf("onto"), instAfterAt.length());
-            } else if (instAfterAt.contains("toward")) {
-                instAfterAt = instAfterAt.substring(instAfterAt.indexOf("toward"), instAfterAt.length());
-            }
-
-            instRemove = instRemove + instAfterAt;
-        }
-
-        if (instRemove.contains("At")) {
-            // nếu ko có chữ tại vòng xoay, thì xóa đến dấu ,
-            if (!instRemove.contains("roundabout")) {
-                // bỏ từ dầu đến dấu , để lấy kỹ tự cách dầu , 2 space (do có khoảng trăngg)
-                instRemove = instRemove.substring(instRemove.indexOf(",") + 2, instRemove.length()); // đến length do ký tự cuối là length - 1 mà substring lại ko lấy ký tự length()
-            }
-        }
-
-
-        // remove after past - Continue straight past Piaggio SAPA Điện BIên Phủ onto <b>Xa lộ Hà Nội</b>/<b>Điện Biên Phủ</b>/<b>QL52</b>
-        if (instRemove.contains("Continue straight")) {
-            // nếu có chữ past nữa thì bỏ phần sau past
-            if (instRemove.contains("past")) {
-                String instAfterPast = instRemove.substring(instRemove.indexOf("past"), instRemove.length());
-
-                instRemove = instRemove.substring(0, instRemove.indexOf("past"));
-
-                if (instAfterPast.contains("onto")) {
-                    instAfterPast = instAfterPast.substring(instAfterPast.indexOf("onto"), instAfterPast.length());
-                } else if (instAfterPast.contains("toward")) {
-                    instAfterPast = instAfterPast.substring(instAfterPast.indexOf("toward"), instAfterPast.length());
-                }
-
-                instRemove += instAfterPast;
-            }
-        }
-        return "" + Html.fromHtml(instRemove);
-    }
-
-
     //phong - add marker at a location + dialog (des place)
-    public void setMarkerAtLocationWithDialog(Location userCurrentLocation, int icon, final FragmentManager fragmentManager) {
+    protected void setMarkerAtLocationWithDialog(Location userCurrentLocation, int icon, final FragmentManager fragmentManager) {
         if (userCurrentLocation != null) {
             GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
 //            mIMapController.setCenter(userCurrentPoint);
@@ -252,7 +189,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
     }
 
     //phong - add marker at a location + dialog (start + des place)
-    public void setMarkerAtLocationWithDialogWithStartPlace(Location userCurrentLocation, int icon, final FragmentManager fragmentManager) {
+    protected void setMarkerAtLocationWithDialogWithStartPlace(Location userCurrentLocation, int icon, final FragmentManager fragmentManager) {
         if (userCurrentLocation != null) {
             GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
 //            mIMapController.setCenter(userCurrentPoint);
@@ -287,47 +224,11 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         return false;
     }
 
-    @NonNull
-    public String retrieveSubString(String s) {
-        return s.substring(0, s.lastIndexOf("@"));
-    }
 
-    public String mergeNick(String a, String b) {
-        // merge 2 string nhưng theo abc
-        int compareString = a.compareTo(b);
-        if (compareString < 1) {
-            // la a đứng trước b
-            return a + b;
-        } else if (compareString > 1) {
-            return b + a;
-        } else {
-            return a + b;
-        }
-    }
-
-    public void drawPathOSMWithInstruction(Location startPoint, Location destPoint, String travelMode, float width, String language) {
+    protected void drawPathOSMWithInstruction(Location startPoint, Location destPoint, String travelMode, float width, String language) {
         this.language = language;
         String url = makeURL(startPoint.getLatitude(), startPoint.getLongitude(), destPoint.getLatitude(), destPoint.getLongitude(), travelMode, language);
         new GetDirectionInstruction(startPoint, destPoint, url, width).execute();
-    }
-
-    @NonNull
-    private String makeURL(double sourcelat, double sourcelog, double destlat, double destlog, String travelMode, String language) {
-        StringBuilder urlString = new StringBuilder();
-        urlString.append("https://maps.googleapis.com/maps/api/directions/json");
-        urlString.append("?origin=");// from
-        urlString.append(Double.toString(sourcelat));
-        urlString.append(",");
-        urlString.append(Double.toString(sourcelog));
-        urlString.append("&destination=");// to
-        urlString.append(Double.toString(destlat));
-        urlString.append(",");
-        urlString.append(Double.toString(destlog));
-        urlString.append("&mode=" + travelMode);
-        urlString.append("&language=" + language);
-        urlString.append("&key=" + Constant.GOOGLE_SERVER_KEY);
-        Log.i("BaseFragment", "makeURL: " + urlString.toString());
-        return urlString.toString();
     }
 
     // phong - get json from URL
@@ -346,8 +247,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
 
         @Override
         protected String doInBackground(Void... params) {
-            String json = getJSONFromUrl(this.url);
-            return json;
+            return getJSONFromUrl(this.url);
         }
 
         @Override
@@ -358,138 +258,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
                 centerMap(this.startPoint);
             }
         }
-    }
-
-    //    xac định xem ngôn ngữ mình upload lên là english hay vietnam
-    private class GetLanguageDetect2 extends AsyncTask<String, Void, StringBuffer> {
-        @Override
-        protected StringBuffer doInBackground(String... params) {
-            String mPreviousLanguage = "en";
-            String mCurrentLanguage = "en";
-
-            StringBuffer instructionBuffer = new StringBuffer(params[0]);
-            if (language.equals(Constant.LAN_EN)) {
-                instructionBuffer.insert(0, "<en>");
-                // retrieve each word from string
-                String[] arr = params[0].split(" ");
-
-                // connect to network to retrieve json for each word
-                for (String eachWord : arr) {
-                    // gui len mang để lấy json về
-                    final String FORECAST_BASE_URL =
-                            "http://ws.detectlanguage.com/0.2/detect?";
-                    final String QUERY_PARAM = "q";
-                    final String KEY_PARAM = "key";
-                    Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                            .appendQueryParameter(QUERY_PARAM, eachWord)
-                            .appendQueryParameter(KEY_PARAM, "acd8f06a54e981b3077bac8d3c4756c6")
-                            .build();
-                    String s = getJSONFromUrl(builtUri.toString());
-
-                    try {
-                        final JSONObject json = new JSONObject(s);
-                        JSONObject data = json.getJSONObject("data");
-                        JSONArray detections = data.getJSONArray("detections");
-                        JSONObject detectionsBegin = detections.getJSONObject(0);
-                        mCurrentLanguage = detectionsBegin.getString("language");
-                        // nếu khác ngôn ngữ tiếng anh thì cho nó tiếng việt
-                        if (!mCurrentLanguage.equals("en")) {
-                            mCurrentLanguage = "vi";
-                        }
-
-                        // so sanh
-                        if (!mPreviousLanguage.equals(mCurrentLanguage)) {
-                            // lấy index chữ eachword trong buffer nha
-                            int indexWord = instructionBuffer.indexOf(eachWord);
-
-                            // chèn # + "vi"/"en" tùy previous
-                            if (mPreviousLanguage.equals("en")) {
-                                instructionBuffer.insert(indexWord, "#<vi>");
-                            } else {
-                                instructionBuffer.insert(indexWord, "#<en>");
-                            }
-
-                        }
-                        mPreviousLanguage = mCurrentLanguage;
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            } else {
-                instructionBuffer.insert(0, "<vi>");
-            }
-
-
-            return instructionBuffer;
-        }
-
-        @Override
-        protected void onPostExecute(StringBuffer instructionWithTag) {
-            super.onPostExecute(instructionWithTag);
-            String stringFormat = instructionWithTag.toString();
-            stringFormat = stringFormat.replaceAll("<en>", "<e>");
-            stringFormat = stringFormat.replaceAll("<vi>", "<v>");
-
-            Log.i(TAG, "onPostExecute: " + stringFormat);
-            String[] arr = stringFormat.split("#");
-            int i = 0;
-            if (arr[i].startsWith("<e>")) {
-                speakoutENG(arr, i);
-            }
-            if (arr[i].startsWith("<v>")) {
-                speakoutVN(arr, i);
-            }
-        }
-
-    }
-
-
-    // phong - get JSON reponse from a URL
-    @NonNull
-    private String getJSONFromUrl(String url) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        // request
-        URL url1 = null;
-        try {
-            url1 = new URL(url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        HttpURLConnection connection = null;
-        try {
-            assert url1 != null;
-            connection = (HttpURLConnection) url1.openConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            assert connection != null;
-            connection.setRequestMethod("GET");
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        }
-
-        // read the response
-        try {
-            if (connection.getResponseCode() == 201 || connection.getResponseCode() == 200) {
-                InputStream inputStream = connection.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line);
-                }
-                inputStream.close();
-            }
-        } catch (IOException e) {
-            Log.e(getClass().getSimpleName(), "Error in request");
-        }
-
-        return stringBuilder.toString();
     }
 
 
@@ -583,6 +351,7 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
                     Log.i("BaseFragment", "drawPathWithInstruction: " + instruction);
                     // add marker
                     setMarkerAtLocation(stepLocation, Constant.ICON_INSTRUCTION, instruction);
+                    // TODO: 5/11/16 add "Đã đến đích" vào marker cuối cùng
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -593,56 +362,112 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
 
     }
 
+    // draw path depends on arrayList of GeoPoint
+    protected void drawPathDependGeoPoint(ArrayList<GeoPoint> waypoints) {
+        Road road = new Road(waypoints);
+        final ArrayList<GeoPoint> list = road.mRouteHigh;
 
-    // phong - method to return a list of point from JSON.
-    private List<GeoPoint> decodePoly(String encoded) {
-        List<GeoPoint> poly = new ArrayList<GeoPoint>(); // list geopoint
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
+        final PathOverlay myPath = new PathOverlay(Constant.COLOR, getContext());
+        Paint paint = myPath.getPaint();
+        paint.setStrokeWidth(Constant.WIDTH_LINE);
+        paint.setAlpha(150);
+        paint.setDither(true);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        myPath.setPaint(paint);
 
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            GeoPoint p = new GeoPoint((((double) lat / 1E5)),
-                    (((double) lng / 1E5)));
-            poly.add(p);
+        // draw path
+        for (int i = 1; i < list.size(); i++) {
+            GeoPoint g = new GeoPoint(list.get(i).getLatitude(), list.get(i).getLongitude());
+            myPath.addPoint(g);
         }
 
-        return poly;
+        mMapView.getOverlays().add(myPath);
     }
 
-    private void centerMap(Location startPoint) {
-        mMapView.getController().setCenter(new GeoPoint(startPoint.getLatitude(), startPoint.getLongitude()));
-    }
+    //    xac định xem ngôn ngữ mình upload lên là english hay vietnam
+    private class GetLanguageDetect2 extends AsyncTask<String, Void, StringBuffer> {
+        @Override
+        protected StringBuffer doInBackground(String... params) {
+            String mPreviousLanguage = "en";
+            String mCurrentLanguage = "en";
 
-    @Override
-    public void onDestroy() {
-        if (t1 != null) {
-            t1.stop();
-            t1.shutdown();
+            StringBuffer instructionBuffer = new StringBuffer(params[0]);
+            if (language.equals(Constant.LAN_EN)) {
+                instructionBuffer.insert(0, "<en>");
+                // retrieve each word from string
+                String[] arr = params[0].split(" ");
+
+                // connect to network to retrieve json for each word
+                for (String eachWord : arr) {
+                    // gui len mang để lấy json về
+                    final String FORECAST_BASE_URL =
+                            "http://ws.detectlanguage.com/0.2/detect?";
+                    final String QUERY_PARAM = "q";
+                    final String KEY_PARAM = "key";
+                    Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                            .appendQueryParameter(QUERY_PARAM, eachWord)
+                            .appendQueryParameter(KEY_PARAM, "acd8f06a54e981b3077bac8d3c4756c6")
+                            .build();
+                    String s = getJSONFromUrl(builtUri.toString());
+
+                    try {
+                        final JSONObject json = new JSONObject(s);
+                        JSONObject data = json.getJSONObject("data");
+                        JSONArray detections = data.getJSONArray("detections");
+                        JSONObject detectionsBegin = detections.getJSONObject(0);
+                        mCurrentLanguage = detectionsBegin.getString("language");
+                        // nếu khác ngôn ngữ tiếng anh thì cho nó tiếng việt
+                        if (!mCurrentLanguage.equals("en")) {
+                            mCurrentLanguage = "vi";
+                        }
+
+                        // so sanh
+                        if (!mPreviousLanguage.equals(mCurrentLanguage)) {
+                            // lấy index chữ eachword trong buffer nha
+                            int indexWord = instructionBuffer.indexOf(eachWord);
+
+                            // chèn # + "vi"/"en" tùy previous
+                            if (mPreviousLanguage.equals("en")) {
+                                instructionBuffer.insert(indexWord, "#<vi>");
+                            } else {
+                                instructionBuffer.insert(indexWord, "#<en>");
+                            }
+
+                        }
+                        mPreviousLanguage = mCurrentLanguage;
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            } else {
+                instructionBuffer.insert(0, "<vi>");
+            }
+
+
+            return instructionBuffer;
         }
-        if (t2 != null) {
-            t2.stop();
-            t2.shutdown();
+
+        @Override
+        protected void onPostExecute(StringBuffer instructionWithTag) {
+            super.onPostExecute(instructionWithTag);
+            String stringFormat = instructionWithTag.toString();
+            stringFormat = stringFormat.replaceAll("<en>", "<e>");
+            stringFormat = stringFormat.replaceAll("<vi>", "<v>");
+
+            Log.i(TAG, "onPostExecute: " + stringFormat);
+            String[] arr = stringFormat.split("#");
+            int i = 0;
+            if (arr[i].startsWith("<e>")) {
+                speakoutENG(arr, i);
+            }
+            if (arr[i].startsWith("<v>")) {
+                speakoutVN(arr, i);
+            }
         }
-        super.onDestroy();
+
     }
 
     //    speak
@@ -701,27 +526,16 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         });
     }
 
-
-    // draw path depends on arrayList of GeoPoint
-    public void drawPathDependGeoPoint(ArrayList<GeoPoint> waypoints) {
-        Road road = new Road(waypoints);
-        final ArrayList<GeoPoint> list = road.mRouteHigh;
-
-        final PathOverlay myPath = new PathOverlay(Constant.COLOR, getContext());
-        Paint paint = myPath.getPaint();
-        paint.setStrokeWidth(Constant.WIDTH_LINE);
-        paint.setAlpha(150);
-        paint.setDither(true);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        myPath.setPaint(paint);
-
-        // draw path
-        for (int i = 1; i < list.size(); i++) {
-            GeoPoint g = new GeoPoint(list.get(i).getLatitude(), list.get(i).getLongitude());
-            myPath.addPoint(g);
+    @Override
+    public void onDestroy() {
+        if (t1 != null) {
+            t1.stop();
+            t1.shutdown();
         }
-
-        mMapView.getOverlays().add(myPath);
+        if (t2 != null) {
+            t2.stop();
+            t2.shutdown();
+        }
+        super.onDestroy();
     }
 }
