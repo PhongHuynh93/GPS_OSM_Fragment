@@ -50,6 +50,7 @@ import dhbk.android.gps_osm_fragment.Help.ChooseLocationFragmentWithStart;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
+// TODO: 5/11/16 when choose vi/en , remove old paths and draw new path immediately
 public abstract class BaseFragment extends Fragment implements MapEventsReceiver {
     private static final String TAG = "BaseFragment";
     private MapView mMapView;
@@ -200,7 +201,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         // 1. at -> end
         // 2. at -> , (but not remove at in "at the roundable")
         if (instRemove.contains("at")) {
-            // TODO: 5/11/16 remove at -> end but not remove "onto", "toward"
             String instAfterAt = instRemove.substring(instRemove.indexOf("at"), instRemove.length());
 
             instRemove = instRemove.substring(0, instRemove.indexOf("at"));
@@ -211,7 +211,6 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
                 instAfterAt = instAfterAt.substring(instAfterAt.indexOf("toward"), instAfterAt.length());
             }
 
-            // TODO: 5/11/16 concats 2 string
             instRemove = instRemove + instAfterAt;
         }
 
@@ -228,8 +227,18 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         if (instRemove.contains("Continue straight")) {
             // nếu có chữ past nữa thì bỏ phần sau past
             if (instRemove.contains("past")) {
+                String instAfterPast = instRemove.substring(instRemove.indexOf("past"), instRemove.length());
+
                 // TODO: 5/11/16 remove after past but not remove "onto" "toward"
                 instRemove = instRemove.substring(0, instRemove.indexOf("past"));
+
+                if (instAfterPast.contains("onto")) {
+                    instAfterPast = instAfterPast.substring(instAfterPast.indexOf("onto"), instAfterPast.length());
+                } else if (instAfterPast.contains("toward")) {
+                    instAfterPast = instAfterPast.substring(instAfterPast.indexOf("toward"), instAfterPast.length());
+                }
+
+                instRemove += instAfterPast;
             }
         }
 
