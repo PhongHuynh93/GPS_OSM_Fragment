@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -50,6 +51,7 @@ import dhbk.android.gps_osm_fragment.Help.ChooseLocationFragmentWithStart;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 import dhbk.android.gps_osm_fragment.R;
 
+// TODO: 5/11/16 when choose vi/en , remove old paths and draw new path immediately
 public abstract class BaseFragment extends Fragment implements MapEventsReceiver {
     private static final String TAG = "BaseFragment";
     private MapView mMapView;
@@ -142,28 +144,9 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
             hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
 
-            Log.i(TAG, "setMarkerAtLocation: " + title);
-            // TODO: 5/11/16 change this to remove <div>
-//            String instRemoveDiv = title;
-////            // remove a part of string
-////            String instruction = instructionNeedRemove;
-////            if (instruction.indexOf("\n\n") != -1) {
-////                // it contains world
-////                instruction = instructionNeedRemove.substring(0, instructionNeedRemove.indexOf("\n\n"));
-////            }
-//            if (title.contains("</div>")) {
-//                instRemoveDiv = title.substring(0, title.indexOf("<div"));
-//            }
+            final String instAfterRemove = changeInstructionFromGoogle(title);
 
-            // TODO: 5/11/16 remove  string after 1. at -> end 2. at -> , (but not remove at in "at the roundable")
-
-            // TODO: 5/11/16 use this after remove tag of html  -> move downward
-//            final String instructionNeedRemove = "" + Html.fromHtml(title);
-
-
-//            final String instructionKhongDau = new AccentRemover().toUrlFriendly(instruction);
-//            Log.i(TAG, "setMarkerAtLocation: " + Html.toHtml(Html.fromHtml(title)));
-            hereMarker.setTitle(changeInstructionFromGoogle(title));
+            hereMarker.setTitle(instAfterRemove);
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();
 
@@ -200,18 +183,16 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         // 1. at -> end
         // 2. at -> , (but not remove at in "at the roundable")
         if (instRemove.contains("at")) {
-            // TODO: 5/11/16 remove at -> end but not remove "onto", "toward"
             String instAfterAt = instRemove.substring(instRemove.indexOf("at"), instRemove.length());
 
             instRemove = instRemove.substring(0, instRemove.indexOf("at"));
 
-            if (instAfterAt.contains("onto")){
+            if (instAfterAt.contains("onto")) {
                 instAfterAt = instAfterAt.substring(instAfterAt.indexOf("onto"), instAfterAt.length());
             } else if (instAfterAt.contains("toward")) {
                 instAfterAt = instAfterAt.substring(instAfterAt.indexOf("toward"), instAfterAt.length());
             }
 
-            // TODO: 5/11/16 concats 2 string
             instRemove = instRemove + instAfterAt;
         }
 
@@ -228,16 +209,20 @@ public abstract class BaseFragment extends Fragment implements MapEventsReceiver
         if (instRemove.contains("Continue straight")) {
             // nếu có chữ past nữa thì bỏ phần sau past
             if (instRemove.contains("past")) {
-                // TODO: 5/11/16 remove after past but not remove "onto" "toward"
+                String instAfterPast = instRemove.substring(instRemove.indexOf("past"), instRemove.length());
+
                 instRemove = instRemove.substring(0, instRemove.indexOf("past"));
+
+                if (instAfterPast.contains("onto")) {
+                    instAfterPast = instAfterPast.substring(instAfterPast.indexOf("onto"), instAfterPast.length());
+                } else if (instAfterPast.contains("toward")) {
+                    instAfterPast = instAfterPast.substring(instAfterPast.indexOf("toward"), instAfterPast.length());
+                }
+
+                instRemove += instAfterPast;
             }
         }
-
-        Log.i(TAG, "changeInstructionFromGoogle: " + instRemove);
-
-        // TODO: 5/11/16 remove tag from html and return string
-//            final String instructionNeedRemove = "" + Html.fromHtml(title);
-        return instRemove;
+        return "" + Html.fromHtml(instRemove);
     }
 
 
