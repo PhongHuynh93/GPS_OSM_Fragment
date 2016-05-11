@@ -118,9 +118,12 @@ public class BaseFragmentHelper extends Fragment{
         urlString.append(Double.toString(destlat));
         urlString.append(",");
         urlString.append(Double.toString(destlog));
-        urlString.append("&mode=" + travelMode);
-        urlString.append("&language=" + language);
-        urlString.append("&key=" + Constant.GOOGLE_SERVER_KEY);
+        urlString.append("&mode=").append(travelMode);
+        urlString.append("&alternatives=").append("false"); // not allow alternate route
+        urlString.append("&units=").append("metric"); // use met/ kilomet
+        urlString.append("&language=").append(language);
+        urlString.append("&key=").append(Constant.GOOGLE_SERVER_KEY);
+
         Log.i("BaseFragment", "makeURL: " + urlString.toString());
         return urlString.toString();
     }

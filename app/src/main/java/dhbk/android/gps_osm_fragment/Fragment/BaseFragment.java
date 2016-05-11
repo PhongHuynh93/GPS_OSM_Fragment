@@ -265,6 +265,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
     private void drawPathWithInstruction(String result, Location startPlace, Location destPlace, float width) {
         ArrayList<GeoPoint> waypoints = new ArrayList<>(); // tao 1 array cac toạ dộ
         GeoPoint startPoint = new GeoPoint(startPlace.getLatitude(), startPlace.getLongitude());
+
         waypoints.add(startPoint);
         ArrayList<JSONObject> stepsArrayObject = null;
         boolean isReturnOK = true;
@@ -340,15 +341,22 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             for (JSONObject step : stepsArrayObject) {
                 try {
                     // get lat/long of a step
-                    JSONObject startLocation = step.getJSONObject("start_location");
+                    JSONObject startLocation = step.getJSONObject("start_location"); // contains start of step
                     double lat = Double.parseDouble(startLocation.getString("lat"));
                     double lng = Double.parseDouble(startLocation.getString("lng"));
                     Location stepLocation = new Location("stepLocation");
                     stepLocation.setLatitude(lat);
                     stepLocation.setLongitude(lng);
+                    // TODO: 5/11/16 get distance of step in metric
+
+                    // TODO: 5/11/16 get start_location, at that point, show marker "còn" + distance + html instruction
+
+                    // TODO: 5/11/16 get end_location, at that point, show marker html instruction + "now"
+
+
                     // get instruction
                     String instruction = step.getString("html_instructions");
-                    Log.i("BaseFragment", "drawPathWithInstruction: " + instruction);
+                    
                     // add marker
                     setMarkerAtLocation(stepLocation, Constant.ICON_INSTRUCTION, instruction);
                     // TODO: 5/11/16 add "Đã đến đích" vào marker cuối cùng
