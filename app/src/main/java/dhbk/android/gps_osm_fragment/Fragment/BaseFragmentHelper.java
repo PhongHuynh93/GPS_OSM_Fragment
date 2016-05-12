@@ -21,13 +21,15 @@ import java.util.List;
 import dhbk.android.gps_osm_fragment.Help.Constant;
 
 
-public class BaseFragmentHelper extends Fragment{
+public class BaseFragmentHelper extends Fragment {
     public static final String TAG = "BaseFragmentHelper";
 
+    // TODO: 5/12/16 xóa hàm này do ko sd
     // change instruction after getting it from google
-    protected String changeInstructionFromGoogle(String title) {
+    protected String changeInstructionFromGoogle2(String title) {
         // change this to remove <div>
         String instRemove = title;
+        Log.i(TAG, "changeInstructionFromGoogle: " + title);
 
         if (instRemove.contains("</div>")) {
             instRemove = instRemove.substring(0, instRemove.indexOf("<div"));
@@ -36,7 +38,6 @@ public class BaseFragmentHelper extends Fragment{
         Log.i(TAG, "changeInstructionFromGoogle: " + instRemove);
 
 
-        // TODO: 5/11/16 depends on language, remove words  -> check language
         // remove  string after "At"
         // 1. at -> end
         // 2. at -> , (but not remove at in "at the roundable")
@@ -87,7 +88,47 @@ public class BaseFragmentHelper extends Fragment{
         return "" + Html.fromHtml(instRemove);
     }
 
-    @NonNull
+    protected String changeInstructionFromGoogle(String title) {
+        String instRemove = title;
+
+        // TODO: 5/11/16 depends on language, remove words  -> check language
+        if (instRemove.contains(" on ")) {
+            instRemove = instRemove.substring(0, instRemove.indexOf(" on "));
+        }
+
+        if (instRemove.contains("at")) {
+            instRemove = instRemove.substring(0, instRemove.indexOf("at"));
+        }
+
+        if (instRemove.contains("toward")) {
+            instRemove = instRemove.substring(0, instRemove.indexOf("toward"));
+        }
+
+        if (instRemove.contains("onto")) {
+            instRemove = instRemove.substring(0, instRemove.indexOf("onto"));
+        }
+
+        if (instRemove.contains("past")) {
+            instRemove = instRemove.substring(0, instRemove.indexOf("onto"));
+        }
+
+        if (instRemove.contains("At")) {
+            // nếu ko có chữ tại vòng xoay, thì xóa đến dấu ,
+            if (!instRemove.contains("roundabout")) {
+                // bỏ từ dầu đến dấu , để lấy kỹ tự cách dầu , 2 space (do có khoảng trăngg)
+                if (instRemove.contains("continue")) {
+                    instRemove = "continue";
+                } else {
+                    instRemove = instRemove.substring(instRemove.indexOf(",") + 2, instRemove.length()); // đến length do ký tự cuối là length - 1 mà substring lại ko lấy ký tự length()
+                }
+            }
+        }
+
+        return instRemove;
+    }
+
+
+        @NonNull
     public String retrieveSubString(String s) {
         return s.substring(0, s.lastIndexOf("@"));
     }
