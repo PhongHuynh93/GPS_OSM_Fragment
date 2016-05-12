@@ -163,6 +163,55 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
         }
     }
 
+    // phong - add marker at a location with instruction + speak
+    protected void setMarkerAtLocation(Location userCurrentLocation, int icon, String title, String distance) {
+        if (userCurrentLocation != null) {
+            GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
+            Marker hereMarker = new Marker(mMapView);
+            hereMarker.setPosition(userCurrentPoint);
+            hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
+
+            String instAfterRemove = changeInstructionFromGoogle(title);
+
+            // TODO: 5/12/16 nếu có "continue" thì "Go straight " + distance + ", after that " + instAfterRemove;
+            if (distance != null) {
+                if (instAfterRemove.contains("Continue") || instAfterRemove.contains("continue")) {
+                    instAfterRemove = "Go straight " + distance;
+                } else if (title.contains("Merge") || title.contains("merge")) {
+                    instAfterRemove = "Go straight " + distance;
+                } else if (title.contains("Keep") || title.contains("Keep")) {
+                    instAfterRemove = "Go straight " + distance;
+                } else {
+                    instAfterRemove = "Go straight " + distance + ", after that " + instAfterRemove;
+                }
+            }
+
+            // "
+
+            hereMarker.setTitle(instAfterRemove);
+            mMapView.getOverlays().add(hereMarker);
+            mMapView.invalidate();
+
+//            final String instructionWhenClickMarker = instruction;
+
+//             when click marker, speak instruction
+//            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+//                @Override
+//                public boolean onMarkerClick(Marker marker, MapView mapView) {
+//                    marker.showInfoWindow();
+//                    mapView.getController().animateTo(marker.getPosition());
+//                    new GetLanguageDetect2().execute(instructionWhenClickMarker);
+//                    return true;
+//                }
+//            });
+
+
+        } else {
+            Toast.makeText(getContext(), "Not determine your current location", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     //phong - add marker at a location + dialog (des place)
     protected void setMarkerAtLocationWithDialog(Location userCurrentLocation, int icon, final FragmentManager fragmentManager) {
         if (userCurrentLocation != null) {
@@ -270,6 +319,10 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
         ArrayList<JSONObject> stepsArrayObject = null;
         boolean isReturnOK = true;
 
+        // contains previous location/metric when loop through "steps"
+        Location startPlacePrevious = startPlace;
+        String metricPrevious = null;
+
         try {
             final JSONObject json = new JSONObject(result); // lưu JSON mà server trả
             JSONArray routeArray = json.getJSONArray("routes");
@@ -348,7 +401,10 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     Location stepLocationStart = new Location("stepLocationStart");
                     stepLocationStart.setLatitude(latstart);
                     stepLocationStart.setLongitude(lngstart);
+
                     // TODO: 5/11/16 get distance of step in metric and add this message in startpoint
+                    JSONObject distance = step.getJSONObject("distance");
+                    String distanceInMet = distance.getString("text");
 
 //                    JSONObject endLocation = step.getJSONObject("end_location"); // contains start of step
 //                    double latend = Double.parseDouble(startLocation.getString("lat"));
@@ -360,18 +416,29 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
 
                     // get instruction
                     String instruction = step.getString("html_instructions");
-                    
+
                     // add marker
 //                    setMarkerAtLocation(stepLocationEnd, Constant.ICON_INSTRUCTION_END, instruction);
-                    setMarkerAtLocation(stepLocationStart, Constant.ICON_INSTRUCTION, instruction);
+                    // TODO: 5/12/16 make instruction: after mets, instruction
+                    // TODO: 5/12/16 draw marker at previous location
+                    setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, instruction, metricPrevious);
+
+//                    setMarkerAtLocation(stepLocationStart, Constant.ICON_INSTRUCTION, instruction);
 
                     // TODO: 5/12/16 add start point (ở trên chỉ là điểm gần start point)
-                    // TODO: 5/11/16 add "Đã đến đích" vào marker cuối cùng
+
+                    // TODO: 5/12/16 update previous location, metrics
+                    startPlacePrevious = stepLocationStart;
+                    metricPrevious = distanceInMet;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
+
+            // 5/11/16 add "Đã đến đích" vào marker cuối cùng
+            setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, "near destination");
+            setMarkerAtLocation(destPlace, Constant.ICON_INSTRUCTION, "destination");
+
         }
         mMapView.invalidate();
 

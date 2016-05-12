@@ -101,7 +101,7 @@ public class BaseFragmentHelper extends Fragment {
             instRemove = instRemove.substring(0, instRemove.indexOf(" on "));
         }
 
-        if (instRemove.contains("at")) {
+        if (!instRemove.contains("destination") && instRemove.contains("at")) {
             instRemove = instRemove.substring(0, instRemove.indexOf("at"));
         }
 
@@ -133,12 +133,9 @@ public class BaseFragmentHelper extends Fragment {
         if (instRemove.contains("Keep")) {
             instRemove = instRemove.substring(0, instRemove.indexOf("to"));
         }
-
-        // TODO: 5/12/16 remove "keep left/right/merge" -> continue straight + mets
-
         // TODO: 5/12/16 if continue too much, "add continue to straight"
 
-        return instRemove;
+        return "" + Html.fromHtml(instRemove);
     }
 
 
