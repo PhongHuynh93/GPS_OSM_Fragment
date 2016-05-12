@@ -174,16 +174,16 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
 
             String instAfterRemove = changeInstructionFromGoogle(title);
 
-            // TODO: 5/12/16 nếu có "continue" thì "Go straight " + distance + ", after that " + instAfterRemove;
+            // if "go straight" -> not add mets
             if (distance != null) {
                 if (instAfterRemove.contains("Continue") || instAfterRemove.contains("continue")) {
-                    instAfterRemove = "Go straight " + distance;
+                    instAfterRemove = "go straight";
                 } else if (title.contains("Merge") || title.contains("merge")) {
-                    instAfterRemove = "Go straight " + distance;
+                    instAfterRemove = "go straight";
                 } else if (title.contains("Keep") || title.contains("Keep")) {
-                    instAfterRemove = "Go straight " + distance;
+                    instAfterRemove = "go straight";
                 } else {
-                    instAfterRemove = "Go straight " + distance + ", after that " + instAfterRemove;
+                    instAfterRemove = "go straight " + distance + ", after that " + instAfterRemove;
                 }
             }
 
