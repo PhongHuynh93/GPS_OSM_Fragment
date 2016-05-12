@@ -133,8 +133,8 @@ public class BaseFragmentHelper extends Fragment {
         if (instRemove.contains("Keep")) {
             instRemove = instRemove.substring(0, instRemove.indexOf("to"));
         }
-        // TODO: 5/12/16 if continue too much, "add continue to straight"
 
+        // TODO: 5/12/16 if continue too much, "add continue to straight"
         return "" + Html.fromHtml(instRemove);
     }
 

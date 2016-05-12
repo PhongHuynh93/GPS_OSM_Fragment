@@ -187,8 +187,6 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                 }
             }
 
-            // "
-
             hereMarker.setTitle(instAfterRemove);
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();
@@ -393,8 +391,10 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             // draw marker on the road
             for (JSONObject step : stepsArrayObject) {
                 try {
+                    // TODO: 5/12/16 parse polyline in steps, after that add end_location on that step
+
                     // get lat/long of a step
-                    // TODO: 5/11/16 get start_location
+                    // 5/11/16 get start_location
                     JSONObject startLocation = step.getJSONObject("start_location"); // contains start of step
                     double latstart = Double.parseDouble(startLocation.getString("lat"));
                     double lngstart = Double.parseDouble(startLocation.getString("lng"));
@@ -402,7 +402,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     stepLocationStart.setLatitude(latstart);
                     stepLocationStart.setLongitude(lngstart);
 
-                    // TODO: 5/11/16 get distance of step in metric and add this message in startpoint
+                    // 5/11/16 get distance of step in metric and add this message in startpoint
                     JSONObject distance = step.getJSONObject("distance");
                     String distanceInMet = distance.getString("text");
 
@@ -419,15 +419,15 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
 
                     // add marker
 //                    setMarkerAtLocation(stepLocationEnd, Constant.ICON_INSTRUCTION_END, instruction);
-                    // TODO: 5/12/16 make instruction: after mets, instruction
-                    // TODO: 5/12/16 draw marker at previous location
+                    // 5/12/16 make instruction: after mets, instruction
+                    // 5/12/16 draw marker at previous location
                     setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, instruction, metricPrevious);
 
 //                    setMarkerAtLocation(stepLocationStart, Constant.ICON_INSTRUCTION, instruction);
 
-                    // TODO: 5/12/16 add start point (ở trên chỉ là điểm gần start point)
+                    // 5/12/16 add start point (ở trên chỉ là điểm gần start point)
 
-                    // TODO: 5/12/16 update previous location, metrics
+                    // 5/12/16 update previous location, metrics
                     startPlacePrevious = stepLocationStart;
                     metricPrevious = distanceInMet;
                 } catch (JSONException e) {
