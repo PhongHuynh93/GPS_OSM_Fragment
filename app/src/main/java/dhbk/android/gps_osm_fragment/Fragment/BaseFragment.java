@@ -341,24 +341,31 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             for (JSONObject step : stepsArrayObject) {
                 try {
                     // get lat/long of a step
+                    // TODO: 5/11/16 get start_location
                     JSONObject startLocation = step.getJSONObject("start_location"); // contains start of step
-                    double lat = Double.parseDouble(startLocation.getString("lat"));
-                    double lng = Double.parseDouble(startLocation.getString("lng"));
-                    Location stepLocation = new Location("stepLocation");
-                    stepLocation.setLatitude(lat);
-                    stepLocation.setLongitude(lng);
-                    // TODO: 5/11/16 get distance of step in metric
+                    double latstart = Double.parseDouble(startLocation.getString("lat"));
+                    double lngstart = Double.parseDouble(startLocation.getString("lng"));
+                    Location stepLocationStart = new Location("stepLocationStart");
+                    stepLocationStart.setLatitude(latstart);
+                    stepLocationStart.setLongitude(lngstart);
+                    // TODO: 5/11/16 get distance of step in metric and add this message in startpoint
 
-                    // TODO: 5/11/16 get start_location, at that point, show marker "còn" + distance + html instruction
-
-                    // TODO: 5/11/16 get end_location, at that point, show marker html instruction + "now"
+//                    JSONObject endLocation = step.getJSONObject("end_location"); // contains start of step
+//                    double latend = Double.parseDouble(startLocation.getString("lat"));
+//                    double lngend = Double.parseDouble(startLocation.getString("lng"));
+//                    Location stepLocationEnd = new Location("stepLocationEnd");
+//                    stepLocationEnd.setLatitude(latend);
+//                    stepLocationEnd.setLongitude(lngend);
 
 
                     // get instruction
                     String instruction = step.getString("html_instructions");
                     
                     // add marker
-                    setMarkerAtLocation(stepLocation, Constant.ICON_INSTRUCTION, instruction);
+//                    setMarkerAtLocation(stepLocationEnd, Constant.ICON_INSTRUCTION_END, instruction);
+                    setMarkerAtLocation(stepLocationStart, Constant.ICON_INSTRUCTION, instruction);
+
+                    // TODO: 5/12/16 add start point (ở trên chỉ là điểm gần start point)
                     // TODO: 5/11/16 add "Đã đến đích" vào marker cuối cùng
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -92,6 +92,11 @@ public class BaseFragmentHelper extends Fragment {
         String instRemove = title;
 
         // TODO: 5/11/16 depends on language, remove words  -> check language
+
+        if (instRemove.contains("</div>")) {
+            instRemove = instRemove.substring(0, instRemove.indexOf("<div"));
+        }
+
         if (instRemove.contains(" on ")) {
             instRemove = instRemove.substring(0, instRemove.indexOf(" on "));
         }
@@ -109,7 +114,7 @@ public class BaseFragmentHelper extends Fragment {
         }
 
         if (instRemove.contains("past")) {
-            instRemove = instRemove.substring(0, instRemove.indexOf("onto"));
+            instRemove = instRemove.substring(0, instRemove.indexOf("past"));
         }
 
         if (instRemove.contains("At")) {
@@ -124,11 +129,20 @@ public class BaseFragmentHelper extends Fragment {
             }
         }
 
+        // keep left to continue, remove "to continue"
+        if (instRemove.contains("Keep")) {
+            instRemove = instRemove.substring(0, instRemove.indexOf("to"));
+        }
+
+        // TODO: 5/12/16 remove "keep left/right/merge" -> continue straight + mets
+
+        // TODO: 5/12/16 if continue too much, "add continue to straight"
+
         return instRemove;
     }
 
 
-        @NonNull
+    @NonNull
     public String retrieveSubString(String s) {
         return s.substring(0, s.lastIndexOf("@"));
     }
