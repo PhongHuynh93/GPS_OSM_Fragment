@@ -166,6 +166,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
     // phong - add marker at a location with instruction + speak
     protected void setMarkerAtLocation(Location userCurrentLocation, int icon, String title, String distance) {
         if (userCurrentLocation != null) {
+            Log.i(TAG, "setMarkerAtLocation: " + title);
             GeoPoint userCurrentPoint = new GeoPoint(userCurrentLocation.getLatitude(), userCurrentLocation.getLongitude());
             Marker hereMarker = new Marker(mMapView);
             hereMarker.setPosition(userCurrentPoint);
@@ -176,16 +177,16 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
 
             // if "go straight" -> not add mets
             if (distance != null) {
-                if (instAfterRemove.contains("Continue") || instAfterRemove.contains("continue")) {
+                if (title.contains("Merge") || title.contains("merge")) {
                     instAfterRemove = "go straight";
-                } else if (title.contains("Merge") || title.contains("merge")) {
-                    instAfterRemove = "go straight";
-                } else if (title.contains("Keep") || title.contains("Keep")) {
+                } else if (title.contains("Keep") || title.contains("keep")) {
                     instAfterRemove = "go straight";
                 } else {
                     instAfterRemove = "go straight " + distance + ", after that " + instAfterRemove;
                 }
             }
+
+            Log.i(TAG, "setMarkerAtLocation: " + instAfterRemove);
 
             hereMarker.setTitle(instAfterRemove);
             mMapView.getOverlays().add(hereMarker);

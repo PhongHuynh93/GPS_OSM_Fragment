@@ -24,7 +24,6 @@ import dhbk.android.gps_osm_fragment.Help.Constant;
 public class BaseFragmentHelper extends Fragment {
     public static final String TAG = "BaseFragmentHelper";
 
-    // TODO: 5/12/16 xóa hàm này do ko sd
     // change instruction after getting it from google
     protected String changeInstructionFromGoogle2(String title) {
         // change this to remove <div>
@@ -91,47 +90,77 @@ public class BaseFragmentHelper extends Fragment {
     protected String changeInstructionFromGoogle(String title) {
         String instRemove = title;
 
-        // TODO: 5/11/16 depends on language, remove words  -> check language
+        // 5/11/16 depends on language, remove words  -> check language
 
+        // : 5/22/16 1 bỏ chỉ dẫn sau div -> rồi
         if (instRemove.contains("</div>")) {
             instRemove = instRemove.substring(0, instRemove.indexOf("<div"));
         }
 
-        if (instRemove.contains(" on ")) {
-            instRemove = instRemove.substring(0, instRemove.indexOf(" on "));
-        }
+        // 5/22/16 sau on là tên đường -> đoạn chưa đến khúc đó thì nên hiện tên đường / khi đến rồi thì ko hiện tên đường -> chưa
+//        if (instRemove.contains(" on ")) {
+//            instRemove = instRemove.substring(0, instRemove.indexOf(" on "));
+//        }
 
-        if (!instRemove.contains("destination") && instRemove.contains("at")) {
-            instRemove = instRemove.substring(0, instRemove.indexOf("at"));
-        }
-
+        // 5/22/16 3 sau at là địa điểm , nhưng sau at lại là toward có tên dường, bỏ address + thêm tên đường
+        // 5/22/16 5 nếu ko có toward mà chỉ có at thì bỏ at đi
         if (instRemove.contains("toward")) {
-            instRemove = instRemove.substring(0, instRemove.indexOf("toward"));
+            String towardStreet = instRemove.substring(instRemove.indexOf("toward"), instRemove.length());
+
+            if (!instRemove.contains("destination") && instRemove.contains("at")) {
+                instRemove = instRemove.substring(0, instRemove.indexOf("at"));
+                instRemove += " " + towardStreet;
+            }
         }
 
+        // 5/22/16 4 sau onto là tên đường nên ko có bỏ
         if (instRemove.contains("onto")) {
-            instRemove = instRemove.substring(0, instRemove.indexOf("onto"));
+            String onStreet = instRemove.substring(instRemove.indexOf("onto"), instRemove.length());
+
+            if (!instRemove.contains("destination") && instRemove.contains("at")) {
+                instRemove = instRemove.substring(0, instRemove.indexOf("at"));
+                instRemove += " " + onStreet;
+            }
+        }
+
+        // TODO: 5/22/16 giữ lại "to stay on" và bỏ at
+        if (instRemove.contains("to stay on")) {
+            String toStayOnStreet = instRemove.substring(instRemove.indexOf("to stay on"), instRemove.length());
+
+            if (!instRemove.contains("destination") && instRemove.contains("at")) {
+                instRemove = instRemove.substring(0, instRemove.indexOf("at"));
+                instRemove += " " + toStayOnStreet;
+            }
         }
 
         if (instRemove.contains("past")) {
             instRemove = instRemove.substring(0, instRemove.indexOf("past"));
         }
 
+        // 5/22/16 6 nếu có at thì bỏ phần sau at
+        if (!instRemove.contains("destination") && instRemove.contains("at")) {
+            instRemove = instRemove.substring(0, instRemove.indexOf("at"));
+        }
+
         if (instRemove.contains("At")) {
             // nếu ko có chữ tại vòng xoay, thì xóa đến dấu ,
             if (!instRemove.contains("roundabout")) {
                 // bỏ từ dầu đến dấu , để lấy kỹ tự cách dầu , 2 space (do có khoảng trăngg)
-                if (instRemove.contains("continue")) {
-                    instRemove = "continue";
-                } else {
+//                if (instRemove.contains("continue")) {
+//                    instRemove = "continue";
+//                } else {
                     instRemove = instRemove.substring(instRemove.indexOf(",") + 2, instRemove.length()); // đến length do ký tự cuối là length - 1 mà substring lại ko lấy ký tự length()
-                }
+//                }
             }
         }
 
         // keep left to continue, remove "to continue"
-        if (instRemove.contains("Keep")) {
-            instRemove = instRemove.substring(0, instRemove.indexOf("to"));
+        try {
+            if (instRemove.contains("Keep")) {
+                instRemove = instRemove.substring(0, instRemove.indexOf("to"));
+            }
+        } catch (Throwable e) {
+            Log.e(TAG, "changeInstructionFromGoogle: " + e);
         }
 
         // TODO: 5/12/16 if continue too much, "add continue to straight"
