@@ -123,7 +123,7 @@ public class BaseFragmentHelper extends Fragment {
             }
         }
 
-        // TODO: 5/22/16 giữ lại "to stay on" và bỏ at
+        //  giữ lại "to stay on" và bỏ at
         if (instRemove.contains("to stay on")) {
             String toStayOnStreet = instRemove.substring(instRemove.indexOf("to stay on"), instRemove.length());
 

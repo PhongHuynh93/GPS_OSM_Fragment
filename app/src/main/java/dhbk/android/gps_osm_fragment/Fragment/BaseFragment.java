@@ -394,6 +394,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                 try {
                     // TODO: 5/12/16 parse polyline in steps, after that add end_location on that step
 
+                    // TODO: 5/23/16 ta lấy distance và location từ điểm đằng trước, còn instruction từ điểm hiển tại -> để cho có dạng từ location và đi bn mét từ điểm đằng trước, ta sẽ có hướng dẫn ở điểm hiện tại
                     // get lat/long of a step
                     // 5/11/16 get start_location
                     JSONObject startLocation = step.getJSONObject("start_location"); // contains start of step
