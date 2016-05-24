@@ -322,6 +322,12 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
         Location startPlacePrevious = startPlace;
         String metricPrevious = null;
 
+        // polyline của từng đoạn đường
+        ArrayList<GeoPoint> polylineSegment = null; // tao 1 array cac toạ dộ
+        ArrayList<GeoPoint> polylineSegmentPrevious = null; // tao 1 array cac toạ dộ
+
+
+
         try {
             final JSONObject json = new JSONObject(result); // lưu JSON mà server trả
             JSONArray routeArray = json.getJSONArray("routes");
@@ -342,6 +348,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     stepsArrayObject.add(stepsArray.getJSONObject(i));
                 }
 
+                // TODO: 5/24/16 INSTRUCTION POLYLINE
                 String encodedString = overviewPolylines.getString("points"); // lấy value với key là "point"
                 List<GeoPoint> list = decodePoly(encodedString); // hàm này return 1 list Geopoint doc  đường đi
 
@@ -392,9 +399,8 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             // draw marker on the road
             for (JSONObject step : stepsArrayObject) {
                 try {
-                    // TODO: 5/12/16 parse polyline in steps, after that add end_location on that step
 
-                    // TODO: 5/23/16 ta lấy distance và location từ điểm đằng trước, còn instruction từ điểm hiển tại -> để cho có dạng từ location và đi bn mét từ điểm đằng trước, ta sẽ có hướng dẫn ở điểm hiện tại
+                    // : 5/23/16 ta lấy distance và location từ điểm đằng trước, còn instruction từ điểm hiển tại -> để cho có dạng từ location và đi bn mét từ điểm đằng trước, ta sẽ có hướng dẫn ở điểm hiện tại
                     // get lat/long of a step
                     // 5/11/16 get start_location
                     JSONObject startLocation = step.getJSONObject("start_location"); // contains start of step
@@ -408,30 +414,40 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     JSONObject distance = step.getJSONObject("distance");
                     String distanceInMet = distance.getString("text");
 
-//                    JSONObject endLocation = step.getJSONObject("end_location"); // contains start of step
-//                    double latend = Double.parseDouble(startLocation.getString("lat"));
-//                    double lngend = Double.parseDouble(startLocation.getString("lng"));
-//                    Location stepLocationEnd = new Location("stepLocationEnd");
-//                    stepLocationEnd.setLatitude(latend);
-//                    stepLocationEnd.setLongitude(lngend);
-
-
-                    // get instruction
                     String instruction = step.getString("html_instructions");
 
-                    // add marker
-//                    setMarkerAtLocation(stepLocationEnd, Constant.ICON_INSTRUCTION_END, instruction);
-                    // 5/12/16 make instruction: after mets, instruction
-                    // 5/12/16 draw marker at previous location
+                    // : 5/24/16 lấy polyline của điểm đằng trước
+                    JSONObject polylineJson = step.getJSONObject("polyline");
+                    String encodedStringSegment = polylineJson.getString("points"); // lấy value với key là "point"
+                    polylineSegment = (ArrayList<GeoPoint>) decodePoly(encodedStringSegment); // hàm này return 1 list Geopoint doc  đường đi
+
+
                     setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, instruction, metricPrevious);
 
-//                    setMarkerAtLocation(stepLocationStart, Constant.ICON_INSTRUCTION, instruction);
+                    if (polylineSegmentPrevious != null) {
+                        Log.i(TAG, "drawPathWithInstruction: " + polylineSegmentPrevious.size());
+                        if (polylineSegmentPrevious.size() >= 2) {
+                            for (int z = 0; z < polylineSegmentPrevious.size() - 1; z++) {
+                                // : 5/23/16 ta phải dịch marker sau lên trên chút xúi, z càng cao thì nó càng dịch nhiều
+                                if (z == 2) {
+                                    GeoPoint src = polylineSegmentPrevious.get(z);
+                                    Location segmentLocation = new Location("stepLocationStart");
+                                    segmentLocation.setLatitude(src.getLatitude());
+                                    segmentLocation.setLongitude(src.getLongitude());
 
-                    // 5/12/16 add start point (ở trên chỉ là điểm gần start point)
+                                    setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
-                    // 5/12/16 update previous location, metrics
+
+                    // TODO: 5/23/16 nếu trong đoạn co chữ "turn left"/"turn right" thì phai thêm marker là khi nào mới quẹo
+
                     startPlacePrevious = stepLocationStart;
                     metricPrevious = distanceInMet;
+                    polylineSegmentPrevious = polylineSegment;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
