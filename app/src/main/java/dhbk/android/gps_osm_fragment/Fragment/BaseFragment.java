@@ -173,7 +173,10 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
 
-            String instAfterRemove = changeInstructionFromGoogle(title);
+//            String instAfterRemove = changeInstructionFromGoogle(title);
+
+            // FIXME: 5/25/16 remove var instAfterRemove
+            String instAfterRemove = title;
 
             // if "go straight" -> not add mets
             if (distance != null) {
@@ -327,7 +330,6 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
         ArrayList<GeoPoint> polylineSegmentPrevious = null; // tao 1 array cac toạ dộ
 
 
-
         try {
             final JSONObject json = new JSONObject(result); // lưu JSON mà server trả
             JSONArray routeArray = json.getJSONArray("routes");
@@ -348,7 +350,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     stepsArrayObject.add(stepsArray.getJSONObject(i));
                 }
 
-                // TODO: 5/24/16 INSTRUCTION POLYLINE
+                // : 5/24/16 INSTRUCTION POLYLINE
                 String encodedString = overviewPolylines.getString("points"); // lấy value với key là "point"
                 List<GeoPoint> list = decodePoly(encodedString); // hàm này return 1 list Geopoint doc  đường đi
 
@@ -414,36 +416,70 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     JSONObject distance = step.getJSONObject("distance");
                     String distanceInMet = distance.getString("text");
 
-                    String instruction = step.getString("html_instructions");
+                    // instruction after change google instruction
+                    String instruction = changeInstructionFromGoogle(step.getString("html_instructions"));
+
+//                    setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, instruction, metricPrevious);
 
                     // : 5/24/16 lấy polyline của điểm đằng trước
                     JSONObject polylineJson = step.getJSONObject("polyline");
                     String encodedStringSegment = polylineJson.getString("points"); // lấy value với key là "point"
                     polylineSegment = (ArrayList<GeoPoint>) decodePoly(encodedStringSegment); // hàm này return 1 list Geopoint doc  đường đi
 
-
-                    setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, instruction, metricPrevious);
-
                     if (polylineSegmentPrevious != null) {
                         Log.i(TAG, "drawPathWithInstruction: " + polylineSegmentPrevious.size());
-                        if (polylineSegmentPrevious.size() >= 2) {
+                        if (polylineSegmentPrevious.size() >= 5) {
                             for (int z = 0; z < polylineSegmentPrevious.size() - 1; z++) {
                                 // : 5/23/16 ta phải dịch marker sau lên trên chút xúi, z càng cao thì nó càng dịch nhiều
-                                if (z == 2) {
+                                if (z == 3) {
                                     GeoPoint src = polylineSegmentPrevious.get(z);
                                     Location segmentLocation = new Location("stepLocationStart");
                                     segmentLocation.setLatitude(src.getLatitude());
                                     segmentLocation.setLongitude(src.getLongitude());
-
+                                    // vẽ marker màu xanh dương
                                     setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
-                                    break;
+                                }
+
+                                // vẽ marker màu xanh lá
+                                // : 5/24/16 khi có 2 chữ sau mới vẽ nha, ko thôi đoạn thẳng nó rất dài, dich cái đoạn thông báo xuống 1 chút xíu nữa.
+                                // : 5/23/16 nếu trong đoạn co chữ "turn left"/"turn right" thì phai thêm marker là khi nào mới quẹo
+                                if (z == polylineSegmentPrevious.size() - 2) {
+                                    String turnInstruction = null;
+                                    if (instruction.contains("turn left")) {
+                                        turnInstruction = "turn left";
+                                    } else if (instruction.contains("Turn left")) {
+                                        turnInstruction = "turn left";
+                                    } else if (instruction.contains("turn right")) {
+                                        turnInstruction = "turn right";
+                                    } else if (instruction.contains("Turn right")) {
+                                        turnInstruction = "turn right";
+                                    }
+                                    if (turnInstruction != null) {
+                                        GeoPoint src = polylineSegmentPrevious.get(z);
+                                        Location segmentLocation = new Location("stepLocationStart");
+                                        segmentLocation.setLatitude(src.getLatitude());
+                                        segmentLocation.setLongitude(src.getLongitude());
+                                        instruction = turnInstruction + " now";
+
+                                        setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_GREEN, instruction, null);
+                                    }
                                 }
                             }
                         }
+                        // khi doan dường ngắn thì
+                        else if (polylineSegmentPrevious.size() >= 2) {
+                            // nếu như đoạn đó ngắn quá, thì chỉ lấy bằng 1
+                            GeoPoint src = polylineSegmentPrevious.get(1);
+                            Location segmentLocation = new Location("stepLocationStart");
+                            segmentLocation.setLatitude(src.getLatitude());
+                            segmentLocation.setLongitude(src.getLongitude());
+                            // vẽ marker màu xanh dương
+                            setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION, instruction, null);
+
+                        }
+
                     }
 
-
-                    // TODO: 5/23/16 nếu trong đoạn co chữ "turn left"/"turn right" thì phai thêm marker là khi nào mới quẹo
 
                     startPlacePrevious = stepLocationStart;
                     metricPrevious = distanceInMet;
@@ -458,6 +494,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             setMarkerAtLocation(destPlace, Constant.ICON_INSTRUCTION, "destination");
 
         }
+
         mMapView.invalidate();
 
     }
