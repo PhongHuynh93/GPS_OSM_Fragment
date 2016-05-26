@@ -180,13 +180,18 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
 
             // if "go straight" -> not add mets
             if (distance != null) {
-                if (title.contains("Merge") || title.contains("merge")) {
-                    instAfterRemove = "go straight";
-                } else if (title.contains("Keep") || title.contains("keep")) {
-                    instAfterRemove = "go straight";
+                if (language.equals(Constant.LAN_EN)) {
+                    if (title.contains("Merge") || title.contains("merge")) {
+                        instAfterRemove = "go straight";
+                    } else if (title.contains("Keep") || title.contains("keep")) {
+                        instAfterRemove = "go straight";
+                    } else {
+                        instAfterRemove = "go straight " + distance + ", after that " + instAfterRemove;
+                    }
                 } else {
-                    instAfterRemove = "go straight " + distance + ", after that " + instAfterRemove;
+                    instAfterRemove = "đi thẳng " + distance + ", sau đó " + instAfterRemove;
                 }
+
             }
 
             Log.i(TAG, "setMarkerAtLocation: " + instAfterRemove);
@@ -195,7 +200,12 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();
 
-            final String instClick = "<e>" + instAfterRemove;
+            final String instClick;
+            if (language.equals(Constant.LAN_EN)) {
+                instClick = "<e>" + instAfterRemove;
+            } else {
+                instClick = "<v>" + instAfterRemove;
+            }
             // TODO: 5/26/16 speak
             hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
                 @Override
@@ -204,7 +214,11 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     mapView.getController().animateTo(marker.getPosition());
                     String[] instArray = new String[1];
                     instArray[0] = instClick;
-                    speakoutENG(instArray, 0);
+                    if (language.equals(Constant.LAN_EN)) {
+                        speakoutENG(instArray, 0);
+                    } else {
+                        speakoutVN(instArray, 0);
+                    }
                     return true;
                 }
             });
@@ -442,7 +456,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     // nếu 3 chữ số thì đọc là km
                     if (distanceInMetInteger >= 1000) {
                         if (distanceInMet.contains("km")) {
-                            if (this.language.equals(Constant.LAN_EN) ) {
+                            if (this.language.equals(Constant.LAN_EN)) {
                                 distanceInMet = distanceInMet.replace("km", "kilometer");
                             } else {
                                 distanceInMet = distanceInMet.replace("km", "kí lô mét");
@@ -452,7 +466,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     else {
                         // làm tròn hàng chục
                         distanceInMetInteger = distanceInMetInteger - distanceInMetInteger % 10;
-                        if (this.language.equals(Constant.LAN_EN) ) {
+                        if (this.language.equals(Constant.LAN_EN)) {
                             distanceInMet = distanceInMetInteger + " " + "metric";
                         } else {
                             distanceInMet = distanceInMetInteger + " " + "mét";
@@ -490,22 +504,38 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                                 // : 5/23/16 nếu trong đoạn co chữ "turn left"/"turn right" thì phai thêm marker là khi nào mới quẹo
                                 if (z == polylineSegmentPrevious.size() - 2) {
                                     String turnInstruction = null;
-                                    if (instruction.contains("turn left")) {
-                                        turnInstruction = "turn left";
-                                    } else if (instruction.contains("Turn left")) {
-                                        turnInstruction = "turn left";
-                                    } else if (instruction.contains("turn right")) {
-                                        turnInstruction = "turn right";
-                                    } else if (instruction.contains("Turn right")) {
-                                        turnInstruction = "turn right";
+                                    if (this.language.equals(Constant.LAN_EN)) {
+                                        if (instruction.contains("turn left")) {
+                                            turnInstruction = "turn left";
+                                        } else if (instruction.contains("Turn left")) {
+                                            turnInstruction = "turn left";
+                                        } else if (instruction.contains("turn right")) {
+                                            turnInstruction = "turn right";
+                                        } else if (instruction.contains("Turn right")) {
+                                            turnInstruction = "turn right";
+                                        }
+                                    } else {
+                                        if (instruction.contains("rẽ trái")) {
+                                            turnInstruction = "rẽ trái";
+                                        } else if (instruction.contains("Rẽ trái")) {
+                                            turnInstruction = "rẽ trái";
+                                        } else if (instruction.contains("rẽ phải")) {
+                                            turnInstruction = "rẽ phải";
+                                        } else if (instruction.contains("Rẽ phải")) {
+                                            turnInstruction = "rẽ phải";
+                                        }
                                     }
+
                                     if (turnInstruction != null) {
                                         GeoPoint src = polylineSegmentPrevious.get(z);
                                         Location segmentLocation = new Location("stepLocationStart");
                                         segmentLocation.setLatitude(src.getLatitude());
                                         segmentLocation.setLongitude(src.getLongitude());
-                                        instruction = turnInstruction + " now";
-
+                                        if (this.language.equals(Constant.LAN_EN)) {
+                                            instruction = turnInstruction + " now";
+                                        } else {
+                                            instruction = turnInstruction + " ngay bây giờ";
+                                        }
                                         setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_GREEN, instruction, null);
                                     }
                                 }
@@ -535,8 +565,13 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             }
 
             // 5/11/16 add "Đã đến đích" vào marker cuối cùng
-            setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, "near destination");
-            setMarkerAtLocation(destPlace, Constant.ICON_INSTRUCTION, "destination");
+            if (this.language.equals(Constant.LAN_EN)) {
+                setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, "near destination", null);
+                setMarkerAtLocation(destPlace, Constant.ICON_INSTRUCTION, "destination", null);
+            } else {
+                setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, "gần đến đích", null);
+                setMarkerAtLocation(destPlace, Constant.ICON_INSTRUCTION, "đã đến đích", null);
+            }
 
         }
 
