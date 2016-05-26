@@ -87,7 +87,7 @@ public class BaseFragmentHelper extends Fragment {
         return "" + Html.fromHtml(instRemove);
     }
 
-    protected String changeInstructionFromGoogle(String title) {
+    protected String changeInstructionFromGoogle(String title, String language) {
         String instRemove = title;
 
         // 5/11/16 depends on language, remove words  -> check language
@@ -97,73 +97,98 @@ public class BaseFragmentHelper extends Fragment {
             instRemove = instRemove.substring(0, instRemove.indexOf("<div"));
         }
 
-        // 5/22/16 sau on là tên đường -> đoạn chưa đến khúc đó thì nên hiện tên đường / khi đến rồi thì ko hiện tên đường -> chưa
-//        if (instRemove.contains(" on ")) {
-//            instRemove = instRemove.substring(0, instRemove.indexOf(" on "));
-//        }
+        if (language.equals(Constant.LAN_EN)) {
+            if (instRemove.contains("toward")) {
+                String towardStreet = instRemove.substring(instRemove.indexOf("toward"), instRemove.length());
 
-        // 5/22/16 3 sau at là địa điểm , nhưng sau at lại là toward có tên dường, bỏ address + thêm tên đường
-        // 5/22/16 5 nếu ko có toward mà chỉ có at thì bỏ at đi
-        if (instRemove.contains("toward")) {
-            String towardStreet = instRemove.substring(instRemove.indexOf("toward"), instRemove.length());
+                if (!instRemove.contains("destination") && instRemove.contains("at")) {
+                    instRemove = instRemove.substring(0, instRemove.indexOf("at"));
+                    instRemove += " " + towardStreet;
+                }
+            }
 
+            // 5/22/16 4 sau onto là tên đường nên ko có bỏ
+            if (instRemove.contains("onto")) {
+                String onStreet = instRemove.substring(instRemove.indexOf("onto"), instRemove.length());
+
+                if (!instRemove.contains("destination") && instRemove.contains("at")) {
+                    instRemove = instRemove.substring(0, instRemove.indexOf("at"));
+                    instRemove += " " + onStreet;
+                }
+            }
+
+            //  giữ lại "to stay on" và bỏ at
+            if (instRemove.contains("to stay on")) {
+                String toStayOnStreet = instRemove.substring(instRemove.indexOf("to stay on"), instRemove.length());
+
+                if (!instRemove.contains("destination") && instRemove.contains("at")) {
+                    instRemove = instRemove.substring(0, instRemove.indexOf("at"));
+                    instRemove += " " + toStayOnStreet;
+                }
+            }
+
+            if (instRemove.contains("past")) {
+                instRemove = instRemove.substring(0, instRemove.indexOf("past"));
+            }
+
+            // 5/22/16 6 nếu có at thì bỏ phần sau at
             if (!instRemove.contains("destination") && instRemove.contains("at")) {
                 instRemove = instRemove.substring(0, instRemove.indexOf("at"));
-                instRemove += " " + towardStreet;
             }
-        }
 
-        // 5/22/16 4 sau onto là tên đường nên ko có bỏ
-        if (instRemove.contains("onto")) {
-            String onStreet = instRemove.substring(instRemove.indexOf("onto"), instRemove.length());
+            if (instRemove.contains("At")) {
+                // nếu ko có chữ tại vòng xoay, thì xóa đến dấu ,
+                if (!instRemove.contains("roundabout")) {
 
-            if (!instRemove.contains("destination") && instRemove.contains("at")) {
-                instRemove = instRemove.substring(0, instRemove.indexOf("at"));
-                instRemove += " " + onStreet;
-            }
-        }
-
-        //  giữ lại "to stay on" và bỏ at
-        if (instRemove.contains("to stay on")) {
-            String toStayOnStreet = instRemove.substring(instRemove.indexOf("to stay on"), instRemove.length());
-
-            if (!instRemove.contains("destination") && instRemove.contains("at")) {
-                instRemove = instRemove.substring(0, instRemove.indexOf("at"));
-                instRemove += " " + toStayOnStreet;
-            }
-        }
-
-        if (instRemove.contains("past")) {
-            instRemove = instRemove.substring(0, instRemove.indexOf("past"));
-        }
-
-        // 5/22/16 6 nếu có at thì bỏ phần sau at
-        if (!instRemove.contains("destination") && instRemove.contains("at")) {
-            instRemove = instRemove.substring(0, instRemove.indexOf("at"));
-        }
-
-        if (instRemove.contains("At")) {
-            // nếu ko có chữ tại vòng xoay, thì xóa đến dấu ,
-            if (!instRemove.contains("roundabout")) {
-                // bỏ từ dầu đến dấu , để lấy kỹ tự cách dầu , 2 space (do có khoảng trăngg)
-//                if (instRemove.contains("continue")) {
-//                    instRemove = "continue";
-//                } else {
                     instRemove = instRemove.substring(instRemove.indexOf(",") + 2, instRemove.length()); // đến length do ký tự cuối là length - 1 mà substring lại ko lấy ký tự length()
-//                }
+                }
             }
-        }
 
-        // keep left to continue, remove "to continue"
-        try {
-            if (instRemove.contains("Keep")) {
-                instRemove = instRemove.substring(0, instRemove.indexOf("to"));
+            // keep left to continue, remove "to continue"
+            try {
+                if (instRemove.contains("Keep")) {
+                    instRemove = instRemove.substring(0, instRemove.indexOf("to"));
+                }
+            } catch (Throwable e) {
+                Log.e(TAG, "changeInstructionFromGoogle: " + e);
             }
-        } catch (Throwable e) {
-            Log.e(TAG, "changeInstructionFromGoogle: " + e);
+        } else {
+            //  nếu có "vào" + "tại"
+            if (instRemove.contains("vào")) {
+                String onStreet = instRemove.substring(instRemove.indexOf("vào"), instRemove.length());
+
+                if (instRemove.contains("tại")) {
+                    instRemove = instRemove.substring(0, instRemove.indexOf("tại"));
+                    instRemove += " " + onStreet;
+                }
+            }
+
+            //  nếu có "về" + "tại"
+            if (instRemove.contains("về")) {
+                String onStreet = instRemove.substring(instRemove.indexOf("về"), instRemove.length());
+
+                if (instRemove.contains("tại")) {
+                    instRemove = instRemove.substring(0, instRemove.indexOf("tại"));
+                    instRemove += " " + onStreet;
+                }
+            }
+
+            // nếu có "tại"
+            if (instRemove.contains("tại")) {
+                instRemove = instRemove.substring(0, instRemove.indexOf("tại"));
+            }
+
+            // nếu có "Tại"
+            if (instRemove.contains("Tại")) {
+                // nếu ko có chữ tại vòng xoay, thì xóa đến dấu ,
+                if (!instRemove.contains("xuyến")) {
+                    instRemove = instRemove.substring(instRemove.indexOf(",") + 2, instRemove.length()); // đến length do ký tự cuối là length - 1 mà substring lại ko lấy ký tự length()
+                }
+            }
         }
 
         // TODO: 5/12/16 if continue too much, "add continue to straight"
+        Log.i(TAG, "changeInstructionFromGoogle: " + "" + Html.fromHtml(instRemove));
         return "" + Html.fromHtml(instRemove);
     }
 
