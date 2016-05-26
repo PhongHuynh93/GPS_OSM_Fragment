@@ -138,7 +138,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             hereMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             hereMarker.setIcon(ContextCompat.getDrawable(getContext(), icon));
 
-            final String instAfterRemove = changeInstructionFromGoogle(title);
+            final String instAfterRemove = changeInstructionFromGoogle(title, language);
 
             hereMarker.setTitle(instAfterRemove);
             mMapView.getOverlays().add(hereMarker);
@@ -194,6 +194,28 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             hereMarker.setTitle(instAfterRemove);
             mMapView.getOverlays().add(hereMarker);
             mMapView.invalidate();
+
+            final String instClick = "<e>" + instAfterRemove;
+            // TODO: 5/26/16 speak
+            hereMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker, MapView mapView) {
+                    marker.showInfoWindow();
+                    mapView.getController().animateTo(marker.getPosition());
+                    String[] instArray = new String[1];
+                    instArray[0] = instClick;
+                    speakoutENG(instArray, 0);
+                    return true;
+                }
+            });
+
+//
+//            if (arr[i].startsWith("<e>")) {
+//                speakoutENG(arr, i);
+//            }
+//            if (arr[i].startsWith("<v>")) {
+//                speakoutVN(arr, i);
+//            }
 
 //            final String instructionWhenClickMarker = instruction;
 
@@ -401,7 +423,6 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
             // draw marker on the road
             for (JSONObject step : stepsArrayObject) {
                 try {
-
                     // : 5/23/16 ta lấy distance và location từ điểm đằng trước, còn instruction từ điểm hiển tại -> để cho có dạng từ location và đi bn mét từ điểm đằng trước, ta sẽ có hướng dẫn ở điểm hiện tại
                     // get lat/long of a step
                     // 5/11/16 get start_location
@@ -416,8 +437,31 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     JSONObject distance = step.getJSONObject("distance");
                     String distanceInMet = distance.getString("text");
 
+                    // TODO: 5/26/16 round distance
+                    int distanceInMetInteger = distance.getInt("value");
+                    // nếu 3 chữ số thì đọc là km
+                    if (distanceInMetInteger >= 1000) {
+                        if (distanceInMet.contains("km")) {
+                            if (this.language.equals(Constant.LAN_EN) ) {
+                                distanceInMet = distanceInMet.replace("km", "kilometer");
+                            } else {
+                                distanceInMet = distanceInMet.replace("km", "kí lô mét");
+                            }
+                        }
+                    } // nếu ko thì đọc là met
+                    else {
+                        // làm tròn hàng chục
+                        distanceInMetInteger = distanceInMetInteger - distanceInMetInteger % 10;
+                        if (this.language.equals(Constant.LAN_EN) ) {
+                            distanceInMet = distanceInMetInteger + " " + "metric";
+                        } else {
+                            distanceInMet = distanceInMetInteger + " " + "mét";
+                        }
+                    }
+
+
                     // instruction after change google instruction
-                    String instruction = changeInstructionFromGoogle(step.getString("html_instructions"));
+                    String instruction = changeInstructionFromGoogle(step.getString("html_instructions"), language);
 
 //                    setMarkerAtLocation(startPlacePrevious, Constant.ICON_INSTRUCTION, instruction, metricPrevious);
 
@@ -429,6 +473,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     if (polylineSegmentPrevious != null) {
                         Log.i(TAG, "drawPathWithInstruction: " + polylineSegmentPrevious.size());
                         if (polylineSegmentPrevious.size() >= 5) {
+                            // TODO: 5/26/16 nếu đoạn đường dài thì tùy đoạn đường ta phải chia nhỏ nữa
                             for (int z = 0; z < polylineSegmentPrevious.size() - 1; z++) {
                                 // : 5/23/16 ta phải dịch marker sau lên trên chút xúi, z càng cao thì nó càng dịch nhiều
                                 if (z == 3) {
