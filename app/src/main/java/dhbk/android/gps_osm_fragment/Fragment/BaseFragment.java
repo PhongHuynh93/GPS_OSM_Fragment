@@ -541,18 +541,26 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                                 }
                             }
                         }
-                        // khi doan dường ngắn thì
-                        else if (polylineSegmentPrevious.size() >= 2) {
-                            // nếu như đoạn đó ngắn quá, thì chỉ lấy bằng 1
+                        // khi doan dường quá ngắn thì lấy điểm 1
+                        else if (polylineSegmentPrevious.size() == 2) {
+                            // nếu như đoạn đó ngắn quá, thì chỉ lấy bằn0g 1
                             GeoPoint src = polylineSegmentPrevious.get(1);
                             Location segmentLocation = new Location("stepLocationStart");
                             segmentLocation.setLatitude(src.getLatitude());
                             segmentLocation.setLongitude(src.getLongitude());
                             // vẽ marker màu xanh dương
                             setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION, instruction, null);
-
                         }
-
+                        // nếu đoạn dài hơn xíu thì lấy diếm 2
+                        else if (polylineSegmentPrevious.size() > 2) {
+                            // nếu như đoạn đó ngắn quá, thì chỉ lấy bằn0g 1
+                            GeoPoint src = polylineSegmentPrevious.get(2);
+                            Location segmentLocation = new Location("stepLocationStart");
+                            segmentLocation.setLatitude(src.getLatitude());
+                            segmentLocation.setLongitude(src.getLongitude());
+                            // vẽ marker màu xanh dương
+                            setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION, instruction, null);
+                        }
                     }
 
 
