@@ -360,6 +360,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
         // contains previous location/metric when loop through "steps"
         Location startPlacePrevious = startPlace;
         String metricPrevious = null;
+        int distanceInMetIntegerPrevious = 0;
 
         // polyline của từng đoạn đường
         ArrayList<GeoPoint> polylineSegment = null; // tao 1 array cac toạ dộ
@@ -451,7 +452,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     JSONObject distance = step.getJSONObject("distance");
                     String distanceInMet = distance.getString("text");
 
-                    // TODO: 5/26/16 round distance
+                    // : 5/26/16 round distance
                     int distanceInMetInteger = distance.getInt("value");
                     // nếu 3 chữ số thì đọc là km
                     if (distanceInMetInteger >= 1000) {
@@ -484,14 +485,29 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     String encodedStringSegment = polylineJson.getString("points"); // lấy value với key là "point"
                     polylineSegment = (ArrayList<GeoPoint>) decodePoly(encodedStringSegment); // hàm này return 1 list Geopoint doc  đường đi
 
+                    // FIXME: 5/28/16 chỗ này viết thừa rất nhiều, viết code lại cho đẹp
                     if (polylineSegmentPrevious != null) {
                         Log.i(TAG, "drawPathWithInstruction: " + polylineSegmentPrevious.size());
                         if (polylineSegmentPrevious.size() >= 5) {
                             // TODO: 5/26/16 nếu đoạn đường dài thì tùy đoạn đường ta phải chia nhỏ nữa
                             for (int z = 0; z < polylineSegmentPrevious.size() - 1; z++) {
                                 // : 5/23/16 ta phải dịch marker sau lên trên chút xúi, z càng cao thì nó càng dịch nhiều
-                                if (z == 3) {
-                                    GeoPoint src = polylineSegmentPrevious.get(z);
+                                if (polylineSegmentPrevious.size() <= 10) {
+                                    GeoPoint src = polylineSegmentPrevious.get(1);
+                                    Location segmentLocation = new Location("stepLocationStart");
+                                    segmentLocation.setLatitude(src.getLatitude());
+                                    segmentLocation.setLongitude(src.getLongitude());
+                                    // vẽ marker màu xanh dương
+                                    setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                } else if (polylineSegmentPrevious.size() <= 20) {
+                                    GeoPoint src = polylineSegmentPrevious.get(2);
+                                    Location segmentLocation = new Location("stepLocationStart");
+                                    segmentLocation.setLatitude(src.getLatitude());
+                                    segmentLocation.setLongitude(src.getLongitude());
+                                    // vẽ marker màu xanh dương
+                                    setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                } else {
+                                    GeoPoint src = polylineSegmentPrevious.get(6);
                                     Location segmentLocation = new Location("stepLocationStart");
                                     segmentLocation.setLatitude(src.getLatitude());
                                     segmentLocation.setLongitude(src.getLongitude());
@@ -499,10 +515,12 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                                     setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
                                 }
 
+
                                 // vẽ marker màu xanh lá
                                 // : 5/24/16 khi có 2 chữ sau mới vẽ nha, ko thôi đoạn thẳng nó rất dài, dich cái đoạn thông báo xuống 1 chút xíu nữa.
                                 // : 5/23/16 nếu trong đoạn co chữ "turn left"/"turn right" thì phai thêm marker là khi nào mới quẹo
-                                if (z == polylineSegmentPrevious.size() - 2) {
+                                if ((z == polylineSegmentPrevious.size() - 2) && (distanceInMetIntegerPrevious > 200)) {
+                                    Log.i(TAG, "drawPathWithInstruction: Khoang cach" + distanceInMetIntegerPrevious);
                                     String turnInstruction = null;
                                     if (this.language.equals(Constant.LAN_EN)) {
                                         if (instruction.contains("turn left")) {
@@ -513,6 +531,12 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                                             turnInstruction = "turn right";
                                         } else if (instruction.contains("Turn right")) {
                                             turnInstruction = "turn right";
+                                        } // nếu tại vòng xoay cũng phải thông báo
+                                        else if (instruction.contains("roundabout") && instruction.contains("take")) {
+                                            turnInstruction = instruction.substring(instruction.indexOf("take"), instruction.length());
+                                            if (turnInstruction.contains("onto")) {
+                                                turnInstruction = turnInstruction.substring(0, turnInstruction.indexOf("onto"));
+                                            }
                                         }
                                     } else {
                                         if (instruction.contains("rẽ trái")) {
@@ -523,6 +547,11 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                                             turnInstruction = "rẽ phải";
                                         } else if (instruction.contains("Rẽ phải")) {
                                             turnInstruction = "rẽ phải";
+                                        } else if (instruction.contains("xuyến") && instruction.contains("đi")) {
+                                            turnInstruction = instruction.substring(instruction.indexOf("đi", instruction.indexOf("xuyến")), instruction.length());
+                                            if (turnInstruction.contains("vào")) {
+                                                turnInstruction = turnInstruction.substring(0, turnInstruction.indexOf("vào"));
+                                            }
                                         }
                                     }
 
@@ -566,6 +595,7 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
 
                     startPlacePrevious = stepLocationStart;
                     metricPrevious = distanceInMet;
+                    distanceInMetIntegerPrevious = distanceInMetInteger;
                     polylineSegmentPrevious = polylineSegment;
                 } catch (JSONException e) {
                     e.printStackTrace();
