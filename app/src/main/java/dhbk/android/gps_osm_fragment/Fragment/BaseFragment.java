@@ -362,6 +362,9 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
         String metricPrevious = null;
         int distanceInMetIntegerPrevious = 0;
 
+        // biến nhận biết rằng tương lai đang tại roundabout
+        boolean futureRoundabout = false;
+
         // polyline của từng đoạn đường
         ArrayList<GeoPoint> polylineSegment = null; // tao 1 array cac toạ dộ
         ArrayList<GeoPoint> polylineSegmentPrevious = null; // tao 1 array cac toạ dộ
@@ -487,32 +490,57 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
 
                     // FIXME: 5/28/16 chỗ này viết thừa rất nhiều, viết code lại cho đẹp
                     if (polylineSegmentPrevious != null) {
-                        Log.i(TAG, "drawPathWithInstruction: " + polylineSegmentPrevious.size());
                         if (polylineSegmentPrevious.size() >= 5) {
                             // TODO: 5/26/16 nếu đoạn đường dài thì tùy đoạn đường ta phải chia nhỏ nữa
                             for (int z = 0; z < polylineSegmentPrevious.size() - 1; z++) {
                                 // : 5/23/16 ta phải dịch marker sau lên trên chút xúi, z càng cao thì nó càng dịch nhiều
-                                if (polylineSegmentPrevious.size() <= 10) {
-                                    GeoPoint src = polylineSegmentPrevious.get(1);
-                                    Location segmentLocation = new Location("stepLocationStart");
-                                    segmentLocation.setLatitude(src.getLatitude());
-                                    segmentLocation.setLongitude(src.getLongitude());
-                                    // vẽ marker màu xanh dương
-                                    setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
-                                } else if (polylineSegmentPrevious.size() <= 20) {
-                                    GeoPoint src = polylineSegmentPrevious.get(2);
-                                    Location segmentLocation = new Location("stepLocationStart");
-                                    segmentLocation.setLatitude(src.getLatitude());
-                                    segmentLocation.setLongitude(src.getLongitude());
-                                    // vẽ marker màu xanh dương
-                                    setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                if (futureRoundabout) {
+                                    // nếu roundabout lớn
+                                    if (polylineSegmentPrevious.size() >= 65) {
+                                        Log.i(TAG, "drawPathWithInstruction: " + polylineSegmentPrevious.size());
+                                        futureRoundabout = false;
+                                        GeoPoint src = polylineSegmentPrevious.get(47);
+                                        Location segmentLocation = new Location("stepLocationStart");
+                                        segmentLocation.setLatitude(src.getLatitude());
+                                        segmentLocation.setLongitude(src.getLongitude());
+                                        // vẽ marker màu xanh dương
+                                        setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                        break;
+                                    } else { // nếu roundabout nhỏ 
+                                        Log.i(TAG, "drawPathWithInstruction: " + polylineSegmentPrevious.size());
+                                        futureRoundabout = false;
+                                        GeoPoint src = polylineSegmentPrevious.get(20);
+                                        Location segmentLocation = new Location("stepLocationStart");
+                                        segmentLocation.setLatitude(src.getLatitude());
+                                        segmentLocation.setLongitude(src.getLongitude());
+                                        // vẽ marker màu xanh dương
+                                        setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                        break;
+                                    }
                                 } else {
-                                    GeoPoint src = polylineSegmentPrevious.get(6);
-                                    Location segmentLocation = new Location("stepLocationStart");
-                                    segmentLocation.setLatitude(src.getLatitude());
-                                    segmentLocation.setLongitude(src.getLongitude());
-                                    // vẽ marker màu xanh dương
-                                    setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                    if (polylineSegmentPrevious.size() <= 10) {
+                                        GeoPoint src = polylineSegmentPrevious.get(1);
+                                        Location segmentLocation = new Location("stepLocationStart");
+                                        segmentLocation.setLatitude(src.getLatitude());
+                                        segmentLocation.setLongitude(src.getLongitude());
+                                        // vẽ marker màu xanh dương
+                                        setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                    } else if (polylineSegmentPrevious.size() <= 20) {
+                                        GeoPoint src = polylineSegmentPrevious.get(2);
+                                        Location segmentLocation = new Location("stepLocationStart");
+                                        segmentLocation.setLatitude(src.getLatitude());
+                                        segmentLocation.setLongitude(src.getLongitude());
+                                        // vẽ marker màu xanh dương
+                                        setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                    } else {
+                                        // nếu tại vòng xuyến thì vẽ marker xa hơn
+                                        GeoPoint src = polylineSegmentPrevious.get(6);
+                                        Location segmentLocation = new Location("stepLocationStart");
+                                        segmentLocation.setLatitude(src.getLatitude());
+                                        segmentLocation.setLongitude(src.getLongitude());
+                                        // vẽ marker màu xanh dương
+                                        setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_END, instruction, metricPrevious);
+                                    }
                                 }
 
 
@@ -520,7 +548,6 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                                 // : 5/24/16 khi có 2 chữ sau mới vẽ nha, ko thôi đoạn thẳng nó rất dài, dich cái đoạn thông báo xuống 1 chút xíu nữa.
                                 // : 5/23/16 nếu trong đoạn co chữ "turn left"/"turn right" thì phai thêm marker là khi nào mới quẹo
                                 if ((z == polylineSegmentPrevious.size() - 2) && (distanceInMetIntegerPrevious > 200)) {
-                                    Log.i(TAG, "drawPathWithInstruction: Khoang cach" + distanceInMetIntegerPrevious);
                                     String turnInstruction = null;
                                     if (this.language.equals(Constant.LAN_EN)) {
                                         if (instruction.contains("turn left")) {
@@ -561,11 +588,11 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                                         segmentLocation.setLatitude(src.getLatitude());
                                         segmentLocation.setLongitude(src.getLongitude());
                                         if (this.language.equals(Constant.LAN_EN)) {
-                                            instruction = turnInstruction + " now";
+                                            turnInstruction = turnInstruction + " now";
                                         } else {
-                                            instruction = turnInstruction + " ngay bây giờ";
+                                            turnInstruction = turnInstruction + " ngay bây giờ";
                                         }
-                                        setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_GREEN, instruction, null);
+                                        setMarkerAtLocation(segmentLocation, Constant.ICON_INSTRUCTION_GREEN, turnInstruction, null);
                                     }
                                 }
                             }
@@ -597,6 +624,18 @@ public abstract class BaseFragment extends BaseFragmentHelper implements MapEven
                     metricPrevious = distanceInMet;
                     distanceInMetIntegerPrevious = distanceInMetInteger;
                     polylineSegmentPrevious = polylineSegment;
+
+                    Log.i(TAG, "drawPathWithInstruction: " + instruction);
+                    if (language.equals(Constant.LAN_EN)) {
+                        if (instruction.contains("roundabout")) {
+                            futureRoundabout = true;
+                        }
+                    } else {
+                        if (instruction.contains("xuyến")) {
+                            futureRoundabout = true;
+                        }
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
