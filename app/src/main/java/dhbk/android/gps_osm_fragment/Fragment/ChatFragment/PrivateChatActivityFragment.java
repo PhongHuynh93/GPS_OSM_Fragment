@@ -72,7 +72,6 @@ public class PrivateChatActivityFragment extends BaseFragment {
         mAdapter = new FirebaseListAdapter<Nick>(getActivity(), Nick.class, R.layout.list_chat_private, ref) {
             @Override
             protected void populateView(View view, Nick nick, int position) {
-                // TODO: 5/1/16 add imageview (user on/ off)
                 mNickUser = nick.getNick();
                 mEmailUser = nick.getEmail();
                 String emailUserLong = mEmailUser + "@gmail.com";

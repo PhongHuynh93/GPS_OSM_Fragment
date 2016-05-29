@@ -95,7 +95,6 @@ public class RegisterActivityFragment extends BaseFragment {
                         // dk thành công
                         public void onSuccess(Map<String, Object> result) {
                             progress.dismiss();
-                            // TODO: 5/8/16 add to share preference
                             SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putString(Constant.KEY_PREF_EMAIL, emailEdt.getText().toString());
