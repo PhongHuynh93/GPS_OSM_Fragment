@@ -90,6 +90,7 @@ public class BaseFragmentHelper extends Fragment {
     protected String changeInstructionFromGoogle(String title, String language) {
         String instRemove = title;
 
+        Log.i(TAG, "changeInstructionFromGoogle: " + title);
         // 5/11/16 depends on language, remove words  -> check language
 
         // : 5/22/16 1 bỏ chỉ dẫn sau div -> rồi
@@ -104,6 +105,14 @@ public class BaseFragmentHelper extends Fragment {
                 if (!instRemove.contains("destination") && instRemove.contains("at")) {
                     instRemove = instRemove.substring(0, instRemove.indexOf("at"));
                     instRemove += " " + towardStreet;
+                }
+            }
+
+            if (instRemove.contains("At")) {
+                // nếu ko có chữ tại vòng xoay, thì xóa đến dấu ,
+                if (!instRemove.contains("roundabout")) {
+
+                    instRemove = instRemove.substring(instRemove.indexOf(",") + 2, instRemove.length()); // đến length do ký tự cuối là length - 1 mà substring lại ko lấy ký tự length()
                 }
             }
 
@@ -136,13 +145,6 @@ public class BaseFragmentHelper extends Fragment {
                 instRemove = instRemove.substring(0, instRemove.indexOf("at"));
             }
 
-            if (instRemove.contains("At")) {
-                // nếu ko có chữ tại vòng xoay, thì xóa đến dấu ,
-                if (!instRemove.contains("roundabout")) {
-
-                    instRemove = instRemove.substring(instRemove.indexOf(",") + 2, instRemove.length()); // đến length do ký tự cuối là length - 1 mà substring lại ko lấy ký tự length()
-                }
-            }
 
             // keep left to continue, remove "to continue"
             try {
